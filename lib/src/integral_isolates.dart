@@ -4,124 +4,137 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:isolate';
 
+import 'package:async/async.dart';
+import 'package:integral_isolates/src/backpressure/discard_new_backpressure.dart';
+import 'package:integral_isolates/src/compute_callback.dart';
+import 'package:integral_isolates/src/isolate_configuration.dart';
 import 'package:meta/meta.dart';
 
 abstract class IsolateState {
-  late ReceivePort isolateToMainPort;
-  final mainToIsolatePort = Completer<SendPort>();
-  final closePort = Completer<SendPort>();
-
-  final Map<int, Completer> _queue = {};
+  late StreamQueue _isolateToMainPort;
+  final _mainToIsolatePort = Completer<SendPort>();
+  final _closePort = Completer<SendPort>();
 
   Future init() async {
-    isolateToMainPort = ReceivePort();
+    final isolateToMainPort = ReceivePort();
+    _isolateToMainPort = StreamQueue(isolateToMainPort);
     await Isolate.spawn(
       _isolate,
       isolateToMainPort.sendPort,
     );
 
-    isolateToMainPort = isolateToMainPort
-      ..listen((data) {
-        if (data is _IsolateSetupResponse) {
-          mainToIsolatePort.complete(data.mainToIsolatePort);
-          closePort.complete(data.closePort);
-        } else {
-          if (data is _SuccessIsolateRespnose) {
-            //TODO: Handle response error
-            _queue.remove(data.flowId)?.complete(data.response);
-          } else if (data is _ErrorIsolateResponse) {
-            _queue.remove(data.flowId)?.completeError(
-                  data.error,
-                  data.stackTrace,
-                );
-          }
-        }
-      });
+    _isolateToMainPort = _isolateToMainPort;
+
+    final isolateSetupResponse =
+        await _isolateToMainPort.next as _IsolateSetupResponse;
+    _mainToIsolatePort.complete(isolateSetupResponse.mainToIsolatePort);
+    _closePort.complete(isolateSetupResponse.closePort);
+
+    _handleIsolateCalls(isolateSetupResponse.mainToIsolatePort);
   }
 
-  Future<R> isolate<Q, R>(ComputeCallback<Q, R> callback, Q message,
-      {String? debugLabel}) async {
+  Future _handleIsolateCalls(SendPort mainToIsolate) async {
+    await for (final configuration in _backpressure.stream()) {
+      mainToIsolate.send(configuration.value);
+      log('Picking next value');
+      final response = await _isolateToMainPort.next;
+
+      if (response is _SuccessIsolateResponse) {
+        configuration.key.complete(response.response);
+      } else if (response is _ErrorIsolateResponse) {
+        configuration.key.completeError(
+          response.error,
+          response.stackTrace,
+        );
+      } else {
+        // TODO(lohnn): Should not be possible? Notify the developer of issue?
+      }
+    }
+    log('Listener now closed');
+  }
+
+  final _backpressure = DiscardNewBackPressure();
+
+  Future<R> isolate<Q, R>(
+    ComputeCallback<Q, R> callback,
+    Q message, {
+    String? debugLabel,
+  }) {
     debugLabel ??= 'compute';
 
     final Flow flow = Flow.begin();
-    final mainToIsolate = await mainToIsolatePort.future;
-
-    mainToIsolate.send(
-      _IsolateConfiguration(
-        callback,
-        message,
-        debugLabel,
-        flow.id,
-      ),
-    );
 
     final completer = Completer<R>();
-    _queue[flow.id] = completer;
+    final isolateConfiguration = IsolateConfiguration(
+      callback,
+      message,
+      debugLabel,
+      flow.id,
+    );
+
+    _backpressure.add(MapEntry(completer, isolateConfiguration));
     return completer.future;
   }
 
   Future dispose() async {
-    (await closePort.future).send("close");
-    isolateToMainPort.close();
+    (await _closePort.future).send('close');
+    _isolateToMainPort.cancel();
+    // _isolateToMainPort.close();
 
-    for (final entry in _queue.entries) {
-      entry.value.completeError("Isolate closed");
-    }
-  }
-
-  static Future _isolate(SendPort isolateToMainPort) async {
-    final mainToIsolateStream = ReceivePort();
-    final closePort = ReceivePort();
-
-    isolateToMainPort.send(_IsolateSetupResponse(
-      mainToIsolateStream.sendPort,
-      closePort.sendPort,
-    ));
-
-    closePort.first.then((_) {
-      print("Closing shop");
-      mainToIsolateStream.close();
-      closePort.close();
-    });
-
-    //TODO: Use listen to not run in queue?
-    await for (final data in mainToIsolateStream) {
-      try {
-        if (data is _IsolateConfiguration) {
-          try {
-            print("${data.flowId}: Trying to calculate data and stuff?");
-            //TODO: Run and return result
-            isolateToMainPort.send(
-              _IsolateResponse.success(
-                data.flowId,
-                await data.applyAndTime(),
-              ),
-            );
-          } catch (error, stackTrace) {
-            //TODO: Return error
-            print("${data.flowId}: Failed to calculate data and stuff");
-            isolateToMainPort.send(
-              _IsolateResponse.error(data.flowId, error, stackTrace),
-            );
-            // isolateToMainStream.send(null);
-          }
-          // } else if (data is String && data == "close") {
-          //   mainToIsolateStream.close();
-        } else {
-          isolateToMainPort.send(null);
-        }
-      } catch (_) {
-        isolateToMainPort.send(null);
-      }
-    }
+    _backpressure.dispose();
   }
 }
 
-typedef ComputeImpl = Future<R> Function<Q, R>(
-    ComputeCallback<Q, R> callback, Q message,
-    {String? debugLabel});
+Future _isolate(SendPort isolateToMainPort) async {
+  final mainToIsolateStream = ReceivePort();
+  final closePort = ReceivePort();
 
-typedef ComputeCallback<Q, R> = FutureOr<R> Function(Q message);
+  isolateToMainPort.send(
+    _IsolateSetupResponse(
+      mainToIsolateStream.sendPort,
+      closePort.sendPort,
+    ),
+  );
+
+  closePort.first.then((_) {
+    log('Closing shop');
+    mainToIsolateStream.close();
+    closePort.close();
+  });
+
+// TODO(lohnn): Use listen to not run in queue?
+  await for (final data in mainToIsolateStream) {
+    try {
+      if (data is IsolateConfiguration) {
+        try {
+          log('${data.flowId}: Trying to calculate data and stuff?');
+          isolateToMainPort.send(
+            _IsolateResponse.success(
+              data.flowId,
+              await data.applyAndTime(),
+            ),
+          );
+        } catch (error, stackTrace) {
+          log('${data.flowId}: Failed to calculate data and stuff');
+          isolateToMainPort.send(
+            _IsolateResponse.error(data.flowId, error, stackTrace),
+          );
+        }
+      } else {
+        isolateToMainPort.send(null);
+      }
+    } catch (_) {
+      isolateToMainPort.send(null);
+    }
+  }
+  log('Now closed, bye');
+}
+
+typedef ComputeImpl = Future<R> Function<Q, R>(
+  ComputeCallback<Q, R> callback,
+  Q message, {
+  String? debugLabel,
+});
 
 class Temp {
   Future<R> compute<Q, R>(
@@ -147,16 +160,19 @@ abstract class _IsolateResponse<R> {
   const _IsolateResponse(this.flowId);
 
   const factory _IsolateResponse.success(int flowId, R response) =
-      _SuccessIsolateRespnose;
+      _SuccessIsolateResponse;
 
   const factory _IsolateResponse.error(
-      int flowId, Object error, StackTrace stackTrace) = _ErrorIsolateResponse;
+    int flowId,
+    Object error,
+    StackTrace stackTrace,
+  ) = _ErrorIsolateResponse;
 }
 
-class _SuccessIsolateRespnose<R> extends _IsolateResponse<R> {
+class _SuccessIsolateResponse<R> extends _IsolateResponse<R> {
   final R response;
 
-  const _SuccessIsolateRespnose(super.flowId, this.response);
+  const _SuccessIsolateResponse(super.flowId, this.response);
 }
 
 class _ErrorIsolateResponse<R> extends _IsolateResponse<R> {
@@ -164,27 +180,4 @@ class _ErrorIsolateResponse<R> extends _IsolateResponse<R> {
   final StackTrace stackTrace;
 
   const _ErrorIsolateResponse(super.flowId, this.error, this.stackTrace);
-}
-
-@immutable
-class _IsolateConfiguration<Q, R> {
-  const _IsolateConfiguration(
-    this.callback,
-    this.message,
-    this.debugLabel,
-    this.flowId,
-  );
-
-  final ComputeCallback<Q, R> callback;
-  final Q message;
-  final String debugLabel;
-  final int flowId;
-
-  FutureOr<R> applyAndTime() {
-    return Timeline.timeSync(
-      debugLabel,
-      () => callback(message),
-      flow: Flow.step(flowId),
-    );
-  }
 }
