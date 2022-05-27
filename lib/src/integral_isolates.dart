@@ -5,15 +5,33 @@ import 'dart:developer';
 import 'dart:isolate';
 
 import 'package:async/async.dart';
-import 'package:integral_isolates/src/backpressure/discard_new_backpressure.dart';
+import 'package:integral_isolates/integral_isolates.dart';
 import 'package:integral_isolates/src/compute_callback.dart';
 import 'package:integral_isolates/src/isolate_configuration.dart';
 import 'package:meta/meta.dart';
 
-abstract class IsolateState {
+class Isolated extends StatefulIsolate {
+  @override
+  final BackpressureStrategy backpressureStrategy;
+
+  Isolated({BackpressureStrategy? backpressureStrategy})
+      : backpressureStrategy = backpressureStrategy ?? NoBackPressureStrategy();
+}
+
+abstract class IsolateGetter {
+  Future<R> isolate<Q, R>(
+    ComputeCallback<Q, R> callback,
+    Q message, {
+    String? debugLabel,
+  });
+}
+
+abstract class StatefulIsolate implements IsolateGetter {
   late StreamQueue _isolateToMainPort;
   final _mainToIsolatePort = Completer<SendPort>();
   final _closePort = Completer<SendPort>();
+
+  BackpressureStrategy get backpressureStrategy;
 
   Future init() async {
     final isolateToMainPort = ReceivePort();
@@ -34,9 +52,9 @@ abstract class IsolateState {
   }
 
   Future _handleIsolateCalls(SendPort mainToIsolate) async {
-    await for (final configuration in _backpressure.stream()) {
+    await for (final configuration in backpressureStrategy.stream) {
       mainToIsolate.send(configuration.value);
-      log('Picking next value');
+      log('${DateTime.now()}: Picking next value');
       final response = await _isolateToMainPort.next;
 
       if (response is _SuccessIsolateResponse) {
@@ -53,8 +71,7 @@ abstract class IsolateState {
     log('Listener now closed');
   }
 
-  final _backpressure = DiscardNewBackPressure();
-
+  @override
   Future<R> isolate<Q, R>(
     ComputeCallback<Q, R> callback,
     Q message, {
@@ -72,7 +89,7 @@ abstract class IsolateState {
       flow.id,
     );
 
-    _backpressure.add(MapEntry(completer, isolateConfiguration));
+    backpressureStrategy.add(MapEntry(completer, isolateConfiguration));
     return completer.future;
   }
 
@@ -81,7 +98,7 @@ abstract class IsolateState {
     _isolateToMainPort.cancel();
     // _isolateToMainPort.close();
 
-    _backpressure.dispose();
+    backpressureStrategy.dispose();
   }
 }
 
@@ -107,7 +124,7 @@ Future _isolate(SendPort isolateToMainPort) async {
     try {
       if (data is IsolateConfiguration) {
         try {
-          log('${data.flowId}: Trying to calculate data and stuff?');
+          log('${DateTime.now()} (${data.flowId}): Trying to calculate data and stuff?');
           isolateToMainPort.send(
             _IsolateResponse.success(
               data.flowId,
