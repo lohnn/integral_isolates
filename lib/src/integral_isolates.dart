@@ -31,7 +31,10 @@ abstract class StatefulIsolate implements IsolateGetter {
   final _mainToIsolatePort = Completer<SendPort>();
   final _closePort = Completer<SendPort>();
 
-  BackpressureStrategy get backpressureStrategy;
+  final BackpressureStrategy _defaultBackpressureStrategy =
+      NoBackPressureStrategy();
+
+  BackpressureStrategy get backpressureStrategy => _defaultBackpressureStrategy;
 
   Future init() async {
     final isolateToMainPort = ReceivePort();
