@@ -1,0 +1,32 @@
+name: integral_isolates
+
+packages:
+  - packages/**
+
+ignore:
+  # Ignore the example apps
+  - "packages/**/example"
+
+command:
+  version:
+    # Additionally build a changelog at the root of the workspace.
+    workspaceChangelog: true
+  bootstrap:
+    usePubspecOverrides: true
+
+scripts:
+  analyze:
+    run: melos exec -c 1 -- flutter analyze --fatal-infos
+    description: Run `flutter analyze` for all packages.
+
+  format:
+    run: melos exec flutter format .
+    description: Run `flutter format` for all packages.
+
+  test:
+    run: melos run test:select --no-select
+    description: Run all Flutter tests in this project.
+
+  upgrade:
+    run: melos exec -- flutter pub upgrade
+    description: Upgrade to the latest supported versions of all packages.

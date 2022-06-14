@@ -1,0 +1,14 @@
+include: package:lint/analysis_options.yaml
+
+analyzer:
+  errors:
+    invalid_annotation_target: ignore
+    prefer_const_constructors: warning
+    prefer_const_constructors_in_immutables: warning
+
+linter:
+  rules:
+    - curly_braces_in_flow_control_structures
+    - flutter_style_todos
+    - require_trailing_commas
+    - unnecessary_lambdas
