@@ -15,7 +15,10 @@ class Isolated extends StatefulIsolate {
   final BackpressureStrategy backpressureStrategy;
 
   Isolated({BackpressureStrategy? backpressureStrategy})
-      : backpressureStrategy = backpressureStrategy ?? NoBackPressureStrategy();
+      : backpressureStrategy =
+            backpressureStrategy ?? NoBackPressureStrategy() {
+    init();
+  }
 }
 
 abstract class IsolateGetter {
