@@ -25,4 +25,9 @@ class IsolateConfiguration<Q, R> {
       flow: Flow.step(flowId),
     );
   }
+
+  @override
+  String toString() {
+    return "IsolateConfiguration(message: $message, debugLabel: $debugLabel, flowId: $flowId)";
+  }
 }
