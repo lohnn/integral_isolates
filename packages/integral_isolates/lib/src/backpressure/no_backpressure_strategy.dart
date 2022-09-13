@@ -1,23 +1,26 @@
-import 'dart:async';
-
 import 'package:integral_isolates/src/backpressure/backpressure_strategy.dart';
-import 'package:integral_isolates/src/isolate_configuration.dart';
 
 class NoBackPressureStrategy extends BackpressureStrategy {
-  final StreamController<MapEntry<Completer, IsolateConfiguration>> controller =
-      StreamController();
+  final List<BackpressureConfiguration> _backstack = [];
 
   @override
-  Stream<MapEntry<Completer, IsolateConfiguration>> get stream =>
-      controller.stream;
+  void add(BackpressureConfiguration configuration) {
+    _backstack.add(configuration);
+  }
 
   @override
-  void add(MapEntry<Completer, IsolateConfiguration> configuration) {
-    controller.add(configuration);
+  bool hasNext() {
+    return _backstack.isNotEmpty;
+  }
+
+  @override
+  BackpressureConfiguration takeNext() {
+    return _backstack.removeAt(0);
   }
 
   @override
   void dispose() {
-    controller.close();
+    _backstack.forEach(drop);
+    _backstack.clear();
   }
 }

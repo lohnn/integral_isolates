@@ -1,19 +1,21 @@
 import 'dart:async';
 
 import 'package:integral_isolates/src/isolate_configuration.dart';
-import 'package:meta/meta.dart';
+
+typedef BackpressureConfiguration = MapEntry<Completer, IsolateConfiguration>;
 
 abstract class BackpressureStrategy {
   const BackpressureStrategy();
 
-  Stream<MapEntry<Completer, IsolateConfiguration>> get stream;
+  bool hasNext();
 
-  void add(MapEntry<Completer, IsolateConfiguration> configuration);
+  BackpressureConfiguration takeNext();
+
+  void add(BackpressureConfiguration configuration);
 
   void dispose();
 
-  @visibleForTesting
-  void drop(MapEntry<Completer, IsolateConfiguration> configuration) {
+  void drop(BackpressureConfiguration configuration) {
     configuration.key.completeError(
       Exception('Dropped due to backpressure'),
     );

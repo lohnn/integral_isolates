@@ -33,6 +33,7 @@ abstract class StatefulIsolate implements IsolateGetter {
   late StreamQueue _isolateToMainPort;
   final _mainToIsolatePort = Completer<SendPort>();
   final _closePort = Completer<SendPort>();
+  Completer<void>? _initCompleter;
 
   final BackpressureStrategy _defaultBackpressureStrategy =
       NoBackPressureStrategy();
@@ -40,6 +41,9 @@ abstract class StatefulIsolate implements IsolateGetter {
   BackpressureStrategy get backpressureStrategy => _defaultBackpressureStrategy;
 
   Future init() async {
+    if (_initCompleter != null) return _initCompleter;
+    _initCompleter = Completer<void>();
+
     final isolateToMainPort = ReceivePort();
     _isolateToMainPort = StreamQueue(isolateToMainPort);
     await Isolate.spawn(
@@ -54,27 +58,8 @@ abstract class StatefulIsolate implements IsolateGetter {
     _mainToIsolatePort.complete(isolateSetupResponse.mainToIsolatePort);
     _closePort.complete(isolateSetupResponse.closePort);
 
-    _handleIsolateCalls(isolateSetupResponse.mainToIsolatePort);
-  }
-
-  Future _handleIsolateCalls(SendPort mainToIsolate) async {
-    await for (final configuration in backpressureStrategy.stream) {
-      mainToIsolate.send(configuration.value);
-      log('${DateTime.now()}: Picking next value');
-      final response = await _isolateToMainPort.next;
-
-      if (response is _SuccessIsolateResponse) {
-        configuration.key.complete(response.response);
-      } else if (response is _ErrorIsolateResponse) {
-        configuration.key.completeError(
-          response.error,
-          response.stackTrace,
-        );
-      } else {
-        // TODO(lohnn): Should not be possible? Notify the developer of issue?
-      }
-    }
-    log('Listener now closed');
+    _handleIsolateCall();
+    _initCompleter!.complete();
   }
 
   @override
@@ -96,15 +81,43 @@ abstract class StatefulIsolate implements IsolateGetter {
     );
 
     backpressureStrategy.add(MapEntry(completer, isolateConfiguration));
+    _handleIsolateCall();
     return completer.future;
   }
 
   Future dispose() async {
     (await _closePort.future).send('close');
+    if (!_mainToIsolatePort.isCompleted) {
+      _mainToIsolatePort.completeError("Disposed before started");
+    }
     _isolateToMainPort.cancel();
-    // _isolateToMainPort.close();
-
     backpressureStrategy.dispose();
+  }
+
+  /// If the worker is currently running, this bool will be set to true
+  bool _isRunning = false;
+
+  Future _handleIsolateCall() async {
+    if (!_isRunning && backpressureStrategy.hasNext()) {
+      _isRunning = true;
+      final configuration = backpressureStrategy.takeNext();
+      (await _mainToIsolatePort.future).send(configuration.value);
+      log('${DateTime.now()}: Picking next value');
+      final response = await _isolateToMainPort.next;
+
+      if (response is _SuccessIsolateResponse) {
+        configuration.key.complete(response.response);
+      } else if (response is _ErrorIsolateResponse) {
+        configuration.key.completeError(
+          response.error,
+          response.stackTrace,
+        );
+      } else {
+        // TODO(lohnn): Should not be possible? Notify the developer of issue?
+      }
+      _isRunning = false;
+      _handleIsolateCall();
+    }
   }
 }
 
@@ -125,7 +138,6 @@ Future _isolate(SendPort isolateToMainPort) async {
     closePort.close();
   });
 
-// TODO(lohnn): Use listen to not run in queue?
   await for (final data in mainToIsolateStream) {
     try {
       if (data is IsolateConfiguration) {
@@ -158,16 +170,6 @@ typedef ComputeImpl = Future<R> Function<Q, R>(
   Q message, {
   String? debugLabel,
 });
-
-class Temp {
-  Future<R> compute<Q, R>(
-    ComputeCallback<Q, R> callback,
-    Q message, {
-    String? debugLabel,
-  }) async {
-    throw Exception();
-  }
-}
 
 @immutable
 class _IsolateSetupResponse {
