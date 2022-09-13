@@ -14,10 +14,10 @@ class Isolated extends StatefulIsolate {
   @override
   final BackpressureStrategy backpressureStrategy;
 
-  Isolated({BackpressureStrategy? backpressureStrategy})
+  Isolated({BackpressureStrategy? backpressureStrategy, bool autoInit = true})
       : backpressureStrategy =
             backpressureStrategy ?? NoBackPressureStrategy() {
-    init();
+    if (autoInit) init();
   }
 }
 
@@ -98,6 +98,11 @@ abstract class StatefulIsolate implements IsolateGetter {
   bool _isRunning = false;
 
   Future _handleIsolateCall() async {
+    if (_initCompleter == null) {
+      throw Exception(
+        "You need to call init before starting to use the isolate",
+      );
+    }
     if (!_isRunning && backpressureStrategy.hasNext()) {
       _isRunning = true;
       final configuration = backpressureStrategy.takeNext();

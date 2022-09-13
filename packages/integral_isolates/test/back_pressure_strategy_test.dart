@@ -13,7 +13,10 @@ void main() {
     List<int> iterable() => [1, 2, 3, 4, 5].toList();
 
     Future<List<int>> runIsolate(BackpressureStrategy strategy) async {
-      final isolated = Isolated(backpressureStrategy: strategy);
+      final isolated = Isolated(
+        backpressureStrategy: strategy,
+        autoInit: false,
+      );
       await isolated.init();
 
       final responses = <int>[];
@@ -40,7 +43,6 @@ void main() {
 
     test("Default (no) strategy", () async {
       final isolate = Isolated();
-      await isolate.init();
       final responses = <int>[];
 
       await Future.wait([
