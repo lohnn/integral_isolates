@@ -12,7 +12,10 @@ dependencies:
     sdk: flutter
   flutter_hooks: ^0.18.5+1
   integral_isolates:
-    git: git@github.com:lohnn/integral_isolates.git
+    git:
+      url: git@github.com:lohnn/integral_isolates.git
+      path: packages/integral_isolates
+      ref: main
 
 dev_dependencies:
   flutter_test:
