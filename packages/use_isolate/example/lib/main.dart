@@ -68,7 +68,8 @@ class IsolateTestingWidget extends HookWidget {
         ),
         TextButton(
           onPressed: () async {
-            final hi = await isolate(_hello, _MethodInput("hi", delay: const Duration(seconds: 2)));
+            final hi = await isolate(
+                _hello, _MethodInput("hi", delay: const Duration(seconds: 2)));
             print(hi);
           },
           child: const Text('Run one'),

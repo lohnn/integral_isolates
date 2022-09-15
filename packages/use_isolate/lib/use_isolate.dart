@@ -2,15 +2,58 @@ library use_isolate;
 
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:integral_isolates/integral_isolates.dart';
 
-ComputeImpl useIsolate({BackpressureStrategy? backpressureStrategy}) {
+/// A hook that exposes a computation function using a long living isolate.
+///
+/// The hook allows for overriding the default backpressure strategy by setting
+/// [backPressureStrategy].
+///
+/// This example uses the hook for checking if a number is a prime value on
+/// each click of a button.
+///
+/// ```dart
+/// class TestingIsolateHook extends HookWidget {
+///   const TestingIsolateHook({super.key});
+///
+///   static bool _isPrime(int value) {
+///     if (value == 1) {
+///       return false;
+///     }
+///     for (int i = 2; i < value; ++i) {
+///       if (value % i == 0) {
+///         return false;
+///       }
+///     }
+///     return true;
+///   }
+///
+///   @override
+///   Widget build(BuildContext context) {
+///     final number = useState(1);
+///     final isolate = useIsolate();
+///
+///     return TextButton(
+///       onPressed: () async {
+///         var isPrime = await isolate(_isPrime, number.value);
+///         print('${number.value} is a prime number? ${isPrime}');
+///         number.value += 1;
+///       },
+///       child: Text(
+///         'Check if ${number.value} is a prime number',
+///       ),
+///     );
+///   }
+/// }
+/// ```
+IsolateComputeImpl useIsolate({BackpressureStrategy? backpressureStrategy}) {
   return use(_IsolateHook(backpressureStrategy));
 }
 
-class _IsolateHook extends Hook<ComputeImpl> {
+class _IsolateHook extends Hook<IsolateComputeImpl> {
   final BackpressureStrategy? backpressureStrategy;
 
   const _IsolateHook(this.backpressureStrategy);
@@ -21,7 +64,7 @@ class _IsolateHook extends Hook<ComputeImpl> {
       );
 }
 
-class _IsolateHookState extends HookState<ComputeImpl, _IsolateHook>
+class _IsolateHookState extends HookState<IsolateComputeImpl, _IsolateHook>
     with StatefulIsolate {
   _IsolateHookState(this.backpressureStrategy);
 
@@ -34,5 +77,5 @@ class _IsolateHookState extends HookState<ComputeImpl, _IsolateHook>
   }
 
   @override
-  ComputeImpl build(BuildContext context) => isolate;
+  IsolateComputeImpl build(BuildContext context) => isolate;
 }

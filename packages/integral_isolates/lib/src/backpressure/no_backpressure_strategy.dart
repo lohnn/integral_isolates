@@ -1,5 +1,10 @@
 import 'package:integral_isolates/src/backpressure/backpressure_strategy.dart';
 
+/// An implementation of [BackpressureStrategy] that uses a FIFO stack for
+/// handling backpressure.
+///
+/// This strategy has the potential of overflowing the memory as it just keeps
+/// piling them up, without discarding any jobs while running.
 class NoBackPressureStrategy extends BackpressureStrategy {
   final List<BackpressureConfiguration> _backstack = [];
 
