@@ -43,5 +43,6 @@ Currently supported strategies can be found in the [documentation](https://pub.d
 
 The API of this package is not final, and is subject to change.
 
-### Are you building games or using hooks? 
-Try the [use_isolate](https://pub.dev/packages/use_isolate) and [flame_isolate](https://pub.dev/packages/flame_isolate) package that controls the lifecycle of the isolate, so you don't have to.
+[comment]: <> (### Are you building games or using hooks? )
+
+[comment]: <> (Try the [use_isolate]&#40;https://pub.dev/packages/use_isolate&#41; and [flame_isolate]&#40;https://pub.dev/packages/flame_isolate&#41; package that controls the lifecycle of the isolate, so you don't have to.)
