@@ -1,6 +1,6 @@
 name: use_isolate
 description: A Hook wrapper of integral_isolates making multi-threading easy using hooks
-version: 0.1.0
+version: 0.1.0+1
 homepage: https://github.com/lohnn/integral_isolates
 
 environment:
