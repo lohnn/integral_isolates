@@ -1,5 +1,3 @@
-library flame_isolate;
-
 import 'package:flame/components.dart';
 import 'package:flutter/foundation.dart';
 import 'package:integral_isolates/integral_isolates.dart';
@@ -13,6 +11,7 @@ import 'package:integral_isolates/integral_isolates.dart';
 /// The following is an example of running a world update cycle when enough time
 /// has passed.
 ///
+/// ```dart
 /// class MyGame extends FlameGame with FlameIsolate {
 ///   @override
 ///   void update(double dt) {
@@ -22,18 +21,21 @@ import 'package:integral_isolates/integral_isolates.dart';
 ///     return super.update(dt);
 ///   }
 /// }
+/// ```
 mixin FlameIsolate on Component implements IsolateGetter {
-  final _isolate = Isolated();
+  Isolated? _isolate;
 
   @override
   Future onMount() async {
-    _isolate.init();
+    _isolate = Isolated();
+    _isolate?.init();
     return super.onMount();
   }
 
   @override
   void onRemove() {
-    _isolate.dispose();
+    _isolate?.dispose();
+    _isolate = null;
   }
 
   @override
@@ -42,5 +44,5 @@ mixin FlameIsolate on Component implements IsolateGetter {
     Q message, {
     String? debugLabel,
   }) =>
-      _isolate.isolate(callback, message, debugLabel: debugLabel);
+      _isolate!.isolate(callback, message, debugLabel: debugLabel);
 }
