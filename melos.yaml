@@ -19,6 +19,10 @@ scripts:
     run: melos exec -c 1 -- flutter analyze --fatal-infos
     description: Run `flutter analyze` for all packages.
 
+  doc:
+    run: melos exec dart doc
+    description: Run `dart doc` for all packages.
+
   format:
     run: melos exec flutter format .
     description: Run `flutter format` for all packages.

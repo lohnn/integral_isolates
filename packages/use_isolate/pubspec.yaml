@@ -1,7 +1,7 @@
 name: use_isolate
-description: A Hook implementation of isolates
-version: 0.0.1
-homepage: lohnn.se
+description: A Hook wrapper of integral_isolates making multi-threading easy using hooks
+version: 0.1.0
+homepage: https://lohnn.se/
 
 environment:
   sdk: ">=2.18.0 <3.0.0"

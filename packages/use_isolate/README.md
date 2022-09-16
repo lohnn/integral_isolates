@@ -1,39 +1,50 @@
-<!-- 
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
-
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages). 
-
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages). 
--->
-
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
-
-## Features
-
-TODO: List what your package can do. Maybe include images, gifs, or videos.
-
-## Getting started
-
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+The power of [integral_isolates](https://pub.dev/packages/use_isolate) neatly packed up in a [hook](https://pub.dev/packages/flutter_hooks).
 
 ## Usage
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder. 
+Using an isolate in a hook has never been simpler. With the use of `useIsolate()` we you can get a compute function similar to [compute](https://api.flutter.dev/flutter/foundation/compute-constant.html) but that lives longer. You don't have to care about lifecycle, the hook handles that for you.
 
+Example:
+``` dart
+class TestingIsolateHook extends HookWidget {
+  const TestingIsolateHook({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final isolate = useIsolate();
+    final number = useState(1);
+
+    return TextButton(
+      onPressed: () async {
+        var isPrime = await isolate(_isPrime, number.value);
+        print('${number.value} is a prime number? ${isPrime}');
+        number.value += 1;
+      },
+      child: Text(
+        'Check if ${number.value} is a prime number',
+      ),
+    );
+  }
+
+  static bool _isPrime(int value) {
+    if (value == 1) {
+      return false;
+    }
+    for (int i = 2; i < value; ++i) {
+      if (value % i == 0) {
+        return false;
+      }
+    }
+    return true;
+  }
+}
+```
+
+Just as integral_isolates, this hook supports backpressure strategies, just send a strategy in as parameter:
 ```dart
-const like = 'sample';
+useIsolate(backpressureStrategy: DiscardNewBackPressureStrategy());
 ```
 
 ## Additional information
 
-TODO: Tell users more about the package: where to find more information, how to 
-contribute to the package, how to file issues, what response they can expect 
-from the package authors, and more.
+You could expect this API to be _mostly_ stable, but implementation of the underlying package (integral_isolates) is not fully finalized yet, and there is more features coming before both packages can count as stable.

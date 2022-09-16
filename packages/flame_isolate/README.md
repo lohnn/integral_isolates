@@ -1,39 +1,22 @@
-<!-- 
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
-
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages). 
-
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages). 
--->
-
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
-
-## Features
-
-TODO: List what your package can do. Maybe include images, gifs, or videos.
-
-## Getting started
-
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+The power of [integral_isolates](https://pub.dev/packages/use_isolate) in your [Flame](https://pub.dev/packages/flame) game.
 
 ## Usage
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder. 
+Just add the mixin `FlameIsolate` to your component and start utilizing the power of an isolate as simple as running the [compute](https://api.flutter.dev/flutter/foundation/compute-constant.html) function.
 
+Example:
 ```dart
-const like = 'sample';
+class MyGame extends FlameGame with FlameIsolate {
+  @override
+  void update(double dt) {
+    if (shouldRecalculate) {
+      isolate(recalculateWorld, worldData).then(updateWorld);
+    }
+    return super.update(dt);
+  }
+}
 ```
 
 ## Additional information
 
-TODO: Tell users more about the package: where to find more information, how to 
-contribute to the package, how to file issues, what response they can expect 
-from the package authors, and more.
+You could expect this API to be _mostly_ stable, but implementation of the underlying package (integral_isolates) is not fully finalized yet, and there is more features coming before both packages can count as stable.

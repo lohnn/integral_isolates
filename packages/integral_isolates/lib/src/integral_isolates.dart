@@ -83,6 +83,7 @@ abstract class StatefulIsolate implements IsolateGetter {
   ///
   /// It is fine to call this function more than once, initialization will only
   /// be run once anyway.
+  @mustCallSuper
   Future init() async {
     if (_initCompleter != null) return _initCompleter;
     _initCompleter = Completer<void>();
@@ -108,9 +109,10 @@ abstract class StatefulIsolate implements IsolateGetter {
   /// A function that runs the provided `callback` on the long running isolate
   /// and (eventually) returns the value returned by `callback`.
   ///
-  /// Same footprint as the function [compute] from flutter, but runs on the
+  /// Same footprint as the function compute from flutter, but runs on the
   /// long running thread and allows running in a pure Dart environment.
   @override
+  @mustCallSuper
   Future<R> isolate<Q, R>(
     ComputeCallback<Q, R> callback,
     Q message, {
@@ -139,6 +141,7 @@ abstract class StatefulIsolate implements IsolateGetter {
   /// to not leak memory and isolates.
   ///
   /// After this function is called, you cannot continue using the isolate.
+  @mustCallSuper
   Future dispose() async {
     // TODO(lohnn): prevent user from adding more work to the isolate after this function is called.
     (await _closePort.future).send('close');

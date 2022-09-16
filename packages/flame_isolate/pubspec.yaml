@@ -1,7 +1,7 @@
 name: flame_isolate
-description: Flame wrapper for Integral Isolates
-version: 0.0.1
-homepage: lohnn.se
+description: Flame wrapper for integral_isolates making multi-threading easy in Flame
+version: 0.1.0
+homepage: https://lohnn.se/
 
 environment:
   sdk: ">=2.18.0 <3.0.0"

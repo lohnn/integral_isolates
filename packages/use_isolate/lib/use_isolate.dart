@@ -1,5 +1,3 @@
-library use_isolate;
-
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -10,7 +8,7 @@ import 'package:integral_isolates/integral_isolates.dart';
 /// A hook that exposes a computation function using a long living isolate.
 ///
 /// The hook allows for overriding the default backpressure strategy by setting
-/// [backPressureStrategy].
+/// [backpressureStrategy].
 ///
 /// This example uses the hook for checking if a number is a prime value on
 /// each click of a button.
@@ -19,22 +17,10 @@ import 'package:integral_isolates/integral_isolates.dart';
 /// class TestingIsolateHook extends HookWidget {
 ///   const TestingIsolateHook({super.key});
 ///
-///   static bool _isPrime(int value) {
-///     if (value == 1) {
-///       return false;
-///     }
-///     for (int i = 2; i < value; ++i) {
-///       if (value % i == 0) {
-///         return false;
-///       }
-///     }
-///     return true;
-///   }
-///
 ///   @override
 ///   Widget build(BuildContext context) {
-///     final number = useState(1);
 ///     final isolate = useIsolate();
+///     final number = useState(1);
 ///
 ///     return TextButton(
 ///       onPressed: () async {
@@ -46,6 +32,18 @@ import 'package:integral_isolates/integral_isolates.dart';
 ///         'Check if ${number.value} is a prime number',
 ///       ),
 ///     );
+///   }
+///
+///   static bool _isPrime(int value) {
+///     if (value == 1) {
+///       return false;
+///     }
+///     for (int i = 2; i < value; ++i) {
+///       if (value % i == 0) {
+///         return false;
+///       }
+///     }
+///     return true;
 ///   }
 /// }
 /// ```
