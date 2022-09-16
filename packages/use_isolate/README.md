@@ -1,4 +1,4 @@
-The power of [integral_isolates](https://pub.dev/packages/use_isolate) neatly packed up in a [hook](https://pub.dev/packages/flutter_hooks).
+The power of [integral_isolates](https://pub.dev/packages/integral_isolates) neatly packed up in a [hook](https://pub.dev/packages/flutter_hooks).
 
 ## Usage
 
