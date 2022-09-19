@@ -6,7 +6,6 @@ import 'dart:isolate';
 
 import 'package:async/async.dart';
 import 'package:integral_isolates/integral_isolates.dart';
-import 'package:integral_isolates/src/compute_callback.dart';
 import 'package:integral_isolates/src/isolate_configuration.dart';
 import 'package:meta/meta.dart';
 
@@ -61,7 +60,15 @@ class Isolated extends StatefulIsolate {
   }
 }
 
+/// Interface for exposing just the [isolate] function.
+///
+/// The abstract class [StatefulIsolate] contains  all the logic for
+/// integral_isolates. Most likely implementing the [IsolateGetter] interface
+/// should just extend the [StatefulIsolate] class.
 abstract class IsolateGetter {
+  /// The compute function to implement.
+  ///
+  /// Example could be [StatefulIsolate.isolate].
   Future<R> isolate<Q, R>(
     ComputeCallback<Q, R> callback,
     Q message, {
@@ -69,6 +76,10 @@ abstract class IsolateGetter {
   });
 }
 
+/// Abstract class for the whole inner workings of stateful_isolates.
+///
+/// [Isolated] is extending this class and is a class for simple use of the
+/// [isolate] function.
 abstract class StatefulIsolate implements IsolateGetter {
   late StreamQueue _isolateToMainPort;
   final _mainToIsolatePort = Completer<SendPort>();
@@ -222,6 +233,16 @@ Future _isolate(SendPort isolateToMainPort) async {
     }
   }
 }
+
+/// Signature for the callback passed to [StatefulIsolate.isolate].
+///
+/// Instances of [ComputeCallback] must be functions that can be sent to an
+/// isolate.
+///
+/// For more information on how this can be used, take a look at
+/// [foundation.ComputeCallback](https://api.flutter.dev/flutter/foundation/ComputeCallback.html)
+/// from the official Flutter documentation.
+typedef ComputeCallback<Q, R> = FutureOr<R> Function(Q message);
 
 /// Data type of the implementation of the computation function.
 ///

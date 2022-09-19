@@ -4,6 +4,7 @@ import 'package:integral_isolates/src/backpressure/backpressure_strategy.dart';
 
 /// Mixin to help out with a queue of one size for [BackpressureStrategy].
 mixin OneSizedQueue on BackpressureStrategy {
+  /// The next item in queue for execution.
   BackpressureConfiguration? nextUp;
 
   @override
