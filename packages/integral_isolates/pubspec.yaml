@@ -1,5 +1,5 @@
 name: integral_isolates
-description: Create a long lived isolate easily
+description: The power of Flutter's compute function, but using a long lived isolate.
 version: 0.1.0+1
 homepage: https://github.com/lohnn/integral_isolates
 
