@@ -1,9 +1,12 @@
+// ignore_for_file: public_member_api_docs
+
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:integral_isolates/src/compute_callback.dart';
+import 'package:integral_isolates/integral_isolates.dart';
 import 'package:meta/meta.dart';
 
+@protected
 @immutable
 class IsolateConfiguration<Q, R> {
   const IsolateConfiguration(

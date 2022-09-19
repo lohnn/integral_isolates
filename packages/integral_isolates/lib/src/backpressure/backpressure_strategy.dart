@@ -3,6 +3,9 @@ import 'dart:async';
 import 'package:integral_isolates/integral_isolates.dart';
 import 'package:integral_isolates/src/isolate_configuration.dart';
 
+/// A job queue item.
+///
+/// Used internally to keep track of jobs waiting for execution.
 typedef BackpressureConfiguration = MapEntry<Completer, IsolateConfiguration>;
 
 /// Class to implement to support a backpressure strategy. This is used to make
@@ -15,8 +18,6 @@ typedef BackpressureConfiguration = MapEntry<Completer, IsolateConfiguration>;
 /// [DiscardNewBackPressureStrategy] that has a job queue with size one, and
 /// as long as the queue is populated a new job will not be added.
 abstract class BackpressureStrategy {
-  const BackpressureStrategy();
-
   /// Function that returns true if the back pressure strategy has a job in
   /// queue.
   bool hasNext();

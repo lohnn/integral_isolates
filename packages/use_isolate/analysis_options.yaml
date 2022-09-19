@@ -8,6 +8,7 @@ analyzer:
 
 linter:
   rules:
+    - public_member_api_docs
     - curly_braces_in_flow_control_structures
     - flutter_style_todos
     - require_trailing_commas
