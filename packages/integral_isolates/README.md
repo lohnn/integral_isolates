@@ -38,7 +38,7 @@ Isolated(backpressureStrategy: DiscardNewBackPressureStrategy());
 ```
 
 Currently supported strategies can be found in the
-documentation](https://pub.dev/documentation/integral_isolates/latest/integral_isolates/BackpressureStrategy-class.html).
+[documentation](https://pub.dev/documentation/integral_isolates/latest/integral_isolates/BackpressureStrategy-class.html).
 
 
 ## Additional information
