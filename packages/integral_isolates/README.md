@@ -2,7 +2,8 @@ Easy to use isolates for Dart and Flutter.
 
 ## Usage
 
-Almost as easy to use as [compute](https://api.flutter.dev/flutter/foundation/compute-constant.html), but using a long lived isolate. For example:
+Almost as easy to use as [compute](https://api.flutter.dev/flutter/foundation/compute-constant.html),
+but using a long lived isolate. For example:
 
 ```dart
 void main() async {
@@ -27,7 +28,7 @@ bool _isPrime(int value) {
 ```
 
 Remember to always dispose once you are done using the isolate to clean up and close the isolate.
-``` dart
+```dart
 isolated.dispose();
 ```
 
@@ -36,7 +37,8 @@ Different backpressure strategies are also supported by just sending in the desi
 Isolated(backpressureStrategy: DiscardNewBackPressureStrategy());
 ```
 
-Currently supported strategies can be found in the [documentation](https://pub.dev/documentation/integral_isolates/latest/integral_isolates/BackpressureStrategy-class.html).
+Currently supported strategies can be found in the
+documentation](https://pub.dev/documentation/integral_isolates/latest/integral_isolates/BackpressureStrategy-class.html).
 
 
 ## Additional information
@@ -45,4 +47,5 @@ The API of this package is not final, and is subject to change.
 
 ### Are you using hooks?
 
-Try the [use_isolate](https://pub.dev/packages/use_isolate) package that controls the lifecycle of the isolate, so you don't have to.
+Try the [use_isolate](https://pub.dev/packages/use_isolate) package that controls the lifecycle of
+the isolate, so you don't have to.
