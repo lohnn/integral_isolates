@@ -70,7 +70,7 @@ abstract class IsolateGetter {
   ///
   /// Example could be [StatefulIsolate.isolate].
   Future<R> isolate<Q, R>(
-    ComputeCallback<Q, R> callback,
+    IsolateCallback<Q, R> callback,
     Q message, {
     String? debugLabel,
   });
@@ -125,7 +125,7 @@ abstract class StatefulIsolate implements IsolateGetter {
   @override
   @mustCallSuper
   Future<R> isolate<Q, R>(
-    ComputeCallback<Q, R> callback,
+    IsolateCallback<Q, R> callback,
     Q message, {
     String? debugLabel,
   }) {
@@ -236,20 +236,20 @@ Future _isolate(SendPort isolateToMainPort) async {
 
 /// Signature for the callback passed to [StatefulIsolate.isolate].
 ///
-/// Instances of [ComputeCallback] must be functions that can be sent to an
+/// Instances of [IsolateCallback] must be functions that can be sent to an
 /// isolate.
 ///
 /// For more information on how this can be used, take a look at
 /// [foundation.ComputeCallback](https://api.flutter.dev/flutter/foundation/ComputeCallback.html)
 /// from the official Flutter documentation.
-typedef ComputeCallback<Q, R> = FutureOr<R> Function(Q message);
+typedef IsolateCallback<Q, R> = FutureOr<R> Function(Q message);
 
 /// Data type of the implementation of the computation function.
 ///
 /// Can be used as data type for the computation function
 /// [StatefulIsolate.isolate].
 typedef IsolateComputeImpl = Future<R> Function<Q, R>(
-  ComputeCallback<Q, R> callback,
+  IsolateCallback<Q, R> callback,
   Q message, {
   String? debugLabel,
 });
