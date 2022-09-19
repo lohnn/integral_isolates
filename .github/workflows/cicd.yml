@@ -1,0 +1,23 @@
+name: cicd
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+      - uses: bluefireteam/melos-action@main
+      - name: Analyze project source
+        run: melos analyze
+      - name: Run tests
+        run: melos test
