@@ -1,11 +1,7 @@
 name: integral_isolates
 
 packages:
-  - packages/**
-
-ignore:
-  # Ignore the example apps
-  - "packages/**/example"
+  - packages/*
 
 command:
   version:
@@ -26,6 +22,13 @@ scripts:
   format:
     run: melos exec flutter format .
     description: Run `flutter format` for all packages.
+
+  test:select:
+    run: melos exec -c 1 -- dart test
+    description: Run `flutter test` for selected packages.
+    select-package:
+      dir-exists:
+        - test
 
   test:
     run: melos run test:select --no-select
