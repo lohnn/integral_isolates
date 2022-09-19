@@ -16,7 +16,7 @@ class IsolateConfiguration<Q, R> {
     this.flowId,
   );
 
-  final ComputeCallback<Q, R> callback;
+  final IsolateCallback<Q, R> callback;
   final Q message;
   final String debugLabel;
   final int flowId;
