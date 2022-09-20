@@ -6,6 +6,7 @@ import 'dart:isolate';
 
 import 'package:async/async.dart';
 import 'package:integral_isolates/integral_isolates.dart';
+import 'package:integral_isolates/src/exceptions/init_exception.dart';
 import 'package:integral_isolates/src/isolate_configuration.dart';
 import 'package:meta/meta.dart';
 
@@ -168,9 +169,7 @@ abstract class StatefulIsolate implements IsolateGetter {
 
   Future _handleIsolateCall() async {
     if (_initCompleter == null) {
-      throw Exception(
-        "You need to call init before starting to use the isolate",
-      );
+      throw InitException();
     }
     if (!_isRunning && backpressureStrategy.hasNext()) {
       _isRunning = true;

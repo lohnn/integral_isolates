@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:integral_isolates/integral_isolates.dart';
+import 'package:integral_isolates/src/exceptions/drop_exception.dart';
 import 'package:integral_isolates/src/isolate_configuration.dart';
 
 /// A job queue item.
@@ -40,8 +41,6 @@ abstract class BackpressureStrategy {
 
   /// Drops the job item, completing it with an error.
   void drop(BackpressureConfiguration configuration) {
-    configuration.key.completeError(
-      Exception('Dropped due to backpressure'),
-    );
+    configuration.key.completeError(BackpressureDropException());
   }
 }
