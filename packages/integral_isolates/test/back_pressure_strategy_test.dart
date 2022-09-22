@@ -9,7 +9,7 @@ int _testFunction(int input) {
 }
 
 void main() {
-  group("Simple iterable responses from backpressure", () {
+  group('Simple iterable responses from backpressure', () {
     List<int> iterable() => [1, 2, 3, 4, 5].toList();
 
     Future<List<int>> runIsolate(BackpressureStrategy strategy) async {
@@ -41,7 +41,7 @@ void main() {
       return responses;
     }
 
-    test("Default (no) strategy", () async {
+    test('Default (no) strategy', () async {
       final isolate = Isolated();
       final responses = <int>[];
 
@@ -55,17 +55,17 @@ void main() {
       expect(responses, [1, 2, 3, 4, 5]);
     });
 
-    test("No backpressure strategy", () async {
+    test('No backpressure strategy', () async {
       final responses = await runIsolate(NoBackPressureStrategy());
       expect(responses, [1, 2, 3, 4, 5]);
     });
 
-    test("Discard new backpressure strategy", () async {
+    test('Discard new backpressure strategy', () async {
       final responses = await runIsolate(DiscardNewBackPressureStrategy());
       expect(responses, [1, 2]);
     });
 
-    test("Replace backpressure strategy", () async {
+    test('Replace backpressure strategy', () async {
       final responses = await runIsolate(ReplaceBackpressureStrategy());
       expect(responses, [1, 5]);
     });

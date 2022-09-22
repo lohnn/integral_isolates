@@ -13,3 +13,8 @@ linter:
     - flutter_style_todos
     - require_trailing_commas
     - unnecessary_lambdas
+    - use_super_parameters
+    - invariant_booleans
+    - use_enums
+    - use_colored_box
+    - prefer_single_quotes
