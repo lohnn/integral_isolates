@@ -14,52 +14,44 @@ void main() {
 
     final commonList = List.generate(50000000, (index) => index);
 
-    group("Just list", () {
-      for (int i = 0; i < 15; i++) {
-        test(i, () async {
-          final before = DateTime.now();
-          final sum = await isolate.isolate(_sum, commonList);
-          print(DateTime.now().difference(before).inMilliseconds);
-          expect(sum, 1249999975000000);
-        });
-      }
+    group('Just list', () {
+      test('Normal case', () async {
+        final before = DateTime.now();
+        final sum = await isolate.isolate(_sum, commonList);
+        print(DateTime.now().difference(before).inMilliseconds);
+        expect(sum, 1249999975000000);
+      });
     });
 
-    group("Immutable list", () {
-      for (int i = 0; i < 15; i++) {
-        test(i, () async {
-          final before = DateTime.now();
-          final unmodifiable = List.unmodifiable(commonList);
-          final sum = await isolate.isolate(_sum, unmodifiable.cast<int>());
-          print(DateTime.now().difference(before).inMilliseconds);
-          expect(sum, 1249999975000000);
-        });
-      }
+    group('Immutable list', () {
+      test('Normal case', () async {
+        final before = DateTime.now();
+        final unmodifiable = List.unmodifiable(commonList);
+        final sum = await isolate.isolate(_sum, unmodifiable.cast<int>());
+        print(DateTime.now().difference(before).inMilliseconds);
+        expect(sum, 1249999975000000);
+      });
     });
 
-    group("Uint8List", () {
-      for (int i = 0; i < 15; i++) {
-        test(i, () async {
-          final before = DateTime.now();
-          final uint8List = Uint32List.fromList(commonList);
-          final sum = await isolate.isolate(_sumUint32List, uint8List);
-          print(DateTime.now().difference(before).inMilliseconds);
-          expect(sum, 1249999975000000);
-        });
-      }
+    group('Uint8List', () {
+      test('Normal case', () async {
+        final before = DateTime.now();
+        final uint8List = Uint32List.fromList(commonList);
+        final sum = await isolate.isolate(_sumUint32List, uint8List);
+        print(DateTime.now().difference(before).inMilliseconds);
+        expect(sum, 1249999975000000);
+      });
     });
 
-    group("TransferableTypedData", () {
-      for (int i = 0; i < 15; i++) {
-        final copiedList = Uint32List.fromList(commonList);
-        test(i, () async {
-          final before = DateTime.now();
-          final transferable = TransferableTypedData.fromList([copiedList]);
-          final sum = await isolate.isolate(_sumTransferable, transferable);
-          print(DateTime.now().difference(before).inMilliseconds);
-          expect(sum, 1249999975000000);
-        });
-      }
+    group('TransferableTypedData', () {
+      final copiedList = Uint32List.fromList(commonList);
+      test('Normal case', () async {
+        final before = DateTime.now();
+        final transferable = TransferableTypedData.fromList([copiedList]);
+        final sum = await isolate.isolate(_sumTransferable, transferable);
+        print(DateTime.now().difference(before).inMilliseconds);
+        expect(sum, 1249999975000000);
+      });
     });
 
     tearDownAll(isolate.dispose);
