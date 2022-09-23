@@ -6,7 +6,6 @@ import 'dart:isolate';
 
 import 'package:async/async.dart';
 import 'package:integral_isolates/integral_isolates.dart';
-import 'package:integral_isolates/src/exceptions/init_exception.dart';
 import 'package:integral_isolates/src/isolate_configuration.dart';
 import 'package:meta/meta.dart';
 
@@ -83,8 +82,8 @@ abstract class IsolateGetter {
 /// [isolate] function.
 abstract class StatefulIsolate implements IsolateGetter {
   late StreamQueue _isolateToMainPort;
-  final _mainToIsolatePort = Completer<SendPort>();
-  final _closePort = Completer<SendPort>();
+  late SendPort _mainToIsolatePort;
+  SendPort? _closePort;
   Completer<void>? _initCompleter;
 
   /// Implementations of [StatefulIsolate] has to override this to specify a
@@ -111,8 +110,8 @@ abstract class StatefulIsolate implements IsolateGetter {
 
     final isolateSetupResponse =
         await _isolateToMainPort.next as _IsolateSetupResponse;
-    _mainToIsolatePort.complete(isolateSetupResponse.mainToIsolatePort);
-    _closePort.complete(isolateSetupResponse.closePort);
+    _mainToIsolatePort = isolateSetupResponse.mainToIsolatePort;
+    _closePort = isolateSetupResponse.closePort;
 
     _handleIsolateCall();
     _initCompleter!.complete();
@@ -156,10 +155,7 @@ abstract class StatefulIsolate implements IsolateGetter {
   @mustCallSuper
   Future dispose() async {
     // TODO(lohnn): prevent user from adding more work to the isolate after this function is called.
-    (await _closePort.future).send('close');
-    if (!_mainToIsolatePort.isCompleted) {
-      _mainToIsolatePort.completeError("Disposed before started");
-    }
+    _closePort?.send('close');
     _isolateToMainPort.cancel();
     backpressureStrategy.dispose();
   }
@@ -170,11 +166,13 @@ abstract class StatefulIsolate implements IsolateGetter {
   Future _handleIsolateCall() async {
     if (_initCompleter == null) {
       throw InitException();
+    } else if (!_initCompleter!.isCompleted) {
+      await _initCompleter!.future;
     }
     if (!_isRunning && backpressureStrategy.hasNext()) {
       _isRunning = true;
       final configuration = backpressureStrategy.takeNext();
-      (await _mainToIsolatePort.future).send(configuration.value);
+      _mainToIsolatePort.send(configuration.value);
       final response = await _isolateToMainPort.next;
 
       if (response is _SuccessIsolateResponse) {

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:integral_isolates/integral_isolates.dart';
-import 'package:integral_isolates/src/exceptions/drop_exception.dart';
 import 'package:integral_isolates/src/isolate_configuration.dart';
 
 /// A job queue item.
