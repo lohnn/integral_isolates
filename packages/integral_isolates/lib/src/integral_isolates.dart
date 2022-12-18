@@ -187,7 +187,6 @@ abstract class StatefulIsolate implements IsolateGetter {
       } catch (e, stackTrace) {
         configuration.key.completeError(e, stackTrace);
       }
-
       _isRunning = false;
       _handleIsolateCall();
     }

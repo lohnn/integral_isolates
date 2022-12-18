@@ -1,3 +1,11 @@
+## 0.3.0
+
+> Note: This release has breaking changes.
+
+ - **REFACTOR**: Refactor/flow improvements (#9).
+ - **DOCS**: Update README.md.
+ - **BREAKING** **REFACTOR**: Use typed exceptions when errors occur (#8).
+
 ## 0.2.0
 
 > Note: This release has breaking changes.
