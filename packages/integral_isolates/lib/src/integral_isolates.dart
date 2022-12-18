@@ -172,18 +172,20 @@ abstract class StatefulIsolate implements IsolateGetter {
     if (!_isRunning && backpressureStrategy.hasNext()) {
       _isRunning = true;
       final configuration = backpressureStrategy.takeNext();
-      _mainToIsolatePort.send(configuration.value);
-      final response = await _isolateToMainPort.next;
 
-      if (response is _SuccessIsolateResponse) {
-        configuration.key.complete(response.response);
-      } else if (response is _ErrorIsolateResponse) {
-        configuration.key.completeError(
-          response.error,
-          response.stackTrace,
-        );
-      } else {
-        // TODO(lohnn): Should not be possible? Notify the developer of issue?
+      try {
+        _mainToIsolatePort.send(configuration.value);
+
+        final response = await _isolateToMainPort.next;
+        if (response is _SuccessIsolateResponse) {
+          configuration.key.complete(response.response);
+        } else if (response is _ErrorIsolateResponse) {
+          configuration.key.completeError(response.error, response.stackTrace);
+        } else {
+          // TODO(lohnn): Should not be possible? Notify the developer of issue?
+        }
+      } catch (e, stackTrace) {
+        configuration.key.completeError(e, stackTrace);
       }
       _isRunning = false;
       _handleIsolateCall();
