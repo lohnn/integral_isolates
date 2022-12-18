@@ -1,3 +1,7 @@
+## 0.3.0+1
+
+ - **REFACTOR**: flow improvements (#10).
+
 ## 0.3.0
 
 > Note: This release has breaking changes.

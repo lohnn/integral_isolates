@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2022-12-18
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
+ - [`integral_isolates` - `v0.3.0+1`](#integral_isolates---v0301)
+ - [`use_isolate` - `v0.1.0+4`](#use_isolate---v0104)
+
+Packages with dependency updates only:
+
+> Packages listed below depend on other packages in this workspace that have had changes. Their versions have been incremented to bump the minimum dependency versions of the packages they depend upon in this project.
+
+ - `use_isolate` - `v0.1.0+4`
+
+---
+
+#### `integral_isolates` - `v0.3.0+1`
+
+ - **REFACTOR**: flow improvements (#10).
+
+
 ## 2022-09-23
 
 ### Changes
