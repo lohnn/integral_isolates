@@ -5,6 +5,10 @@ import 'package:integral_isolates/src/backpressure/backpressure_strategy.dart';
 ///
 /// This strategy has the potential of overflowing the memory as it just keeps
 /// piling them up, without discarding any jobs while running.
+///
+/// Marble diagram to visualize timeline:
+/// --a---b---c---d---e---f---------------|
+/// ------a-----b-----c-----d-----e-----f-|
 class NoBackPressureStrategy extends BackpressureStrategy {
   final List<BackpressureConfiguration> _backstack = [];
 
