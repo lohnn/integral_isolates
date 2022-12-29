@@ -1,3 +1,7 @@
+## 0.3.0+2
+
+ - **DOCS**: Proper format for marble diagrams for the markdown that is created (#11).
+
 ## 0.3.0+1
 
  - **REFACTOR**: flow improvements (#10).

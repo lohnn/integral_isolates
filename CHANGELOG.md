@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2022-12-29
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
+ - [`integral_isolates` - `v0.3.0+2`](#integral_isolates---v0302)
+ - [`use_isolate` - `v0.1.0+5`](#use_isolate---v0105)
+
+Packages with dependency updates only:
+
+> Packages listed below depend on other packages in this workspace that have had changes. Their versions have been incremented to bump the minimum dependency versions of the packages they depend upon in this project.
+
+ - `use_isolate` - `v0.1.0+5`
+
+---
+
+#### `integral_isolates` - `v0.3.0+2`
+
+ - **DOCS**: Proper format for marble diagrams for the markdown that is created (#11).
+
+
 ## 2022-12-18
 
 ### Changes
