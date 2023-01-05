@@ -29,6 +29,15 @@ class IsolateConfiguration<Q, R> {
     );
   }
 
+  IsolateConfiguration<Q, R> copyWith({required Q message}) {
+    return IsolateConfiguration(
+      callback,
+      message,
+      debugLabel,
+      flowId,
+    );
+  }
+
   @override
   String toString() {
     return 'IsolateConfiguration(message: $message, debugLabel: $debugLabel, flowId: $flowId)';
