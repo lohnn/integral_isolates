@@ -77,7 +77,8 @@ mixin _IsolateBase<Q, R> {
   /// After this function is called, you cannot continue using the isolate.
   @mustCallSuper
   Future dispose() async {
-    // TODO(lohnn): prevent user from adding more work to the isolate after this function is called.
+    // TODO(lohnn): prevent user from adding more work to the isolate after
+    // this function is called.
     _closePort?.send('close');
     _isolateToMainPort.cancel();
     backpressureStrategy.dispose();
