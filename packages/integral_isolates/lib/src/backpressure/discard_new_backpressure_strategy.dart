@@ -16,7 +16,7 @@ class DiscardNewBackPressureStrategy<Q, R> extends BackpressureStrategy<Q, R>
     with OneSizedQueue<Q, R> {
   @override
   void add(
-    Completer completer,
+    Completer<R> completer,
     IsolateConfiguration<Q, R> isolateConfiguration,
   ) {
     final configuration = BackpressureConfiguration(

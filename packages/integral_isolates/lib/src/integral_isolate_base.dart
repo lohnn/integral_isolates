@@ -55,7 +55,7 @@ mixin _IsolateBase<Q, R> {
 
         final response = await _isolateToMainPort.next;
         if (response is _SuccessIsolateResponse) {
-          configuration.key.complete(response.response);
+          configuration.key.complete(response.response as R);
         } else if (response is _ErrorIsolateResponse) {
           configuration.key.completeError(response.error, response.stackTrace);
         } else {

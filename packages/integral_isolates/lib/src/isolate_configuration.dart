@@ -40,6 +40,10 @@ class IsolateConfiguration<Q, R> {
 
   @override
   String toString() {
-    return 'IsolateConfiguration(message: $message, debugLabel: $debugLabel, flowId: $flowId)';
+    return 'IsolateConfiguration('
+        'message: $message, '
+        'debugLabel: $debugLabel, '
+        'flowId: $flowId'
+        ')';
   }
 }

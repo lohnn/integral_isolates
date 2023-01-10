@@ -61,22 +61,7 @@ class Isolated extends StatefulIsolate {
     if (autoInit) init();
   }
 
-  static _SpecializedStatefulIsolate<Q, R> specialized<Q, R>({
-    BackpressureStrategy<Q, R>? backpressureStrategy,
-    bool autoInit = true,
-  }) {
-    return IsolatedSpecialized<Q, R>(
-      backpressureStrategy: backpressureStrategy,
-      autoInit: autoInit,
-    );
-  }
-}
-
-class IsolatedSpecialized<Q, R> extends _SpecializedStatefulIsolate<Q, R> {
-  @override
-  final BackpressureStrategy<Q, R> backpressureStrategy;
-
-  /// Creates a minimal isolate.
+  /// Creates a minimal isolate that requires a specific input type [R].
   ///
   /// If [backpressureStrategy] is set, this instance will use provided
   /// strategy. If is is not provided [NoBackPressureStrategy] will be used as
@@ -84,18 +69,21 @@ class IsolatedSpecialized<Q, R> extends _SpecializedStatefulIsolate<Q, R> {
   ///
   /// If [autoInit] is set to false, you have to call function [init] before
   /// starting to use the isolate.
-  IsolatedSpecialized({
+  static _TailoredStatefulIsolate<Q, R> tailored<Q, R>({
     BackpressureStrategy<Q, R>? backpressureStrategy,
     bool autoInit = true,
-  }) : backpressureStrategy = backpressureStrategy ?? NoBackPressureStrategy() {
-    if (autoInit) init();
+  }) {
+    return _TailoredStatefulIsolate<Q, R>(
+      backpressureStrategy: backpressureStrategy,
+      autoInit: autoInit,
+    );
   }
 }
 
 /// Interface for exposing just the [isolate] function.
 ///
 /// The abstract class [StatefulIsolate] contains  all the logic for
-/// integral_isolates. Most likely implementing the [SpecialisedIsolateGetter] interface
+/// integral_isolates. Most likely implementing the [IsolateGetter] interface
 /// should just extend the [StatefulIsolate] class.
 abstract class IsolateGetter {
   /// The compute function to implement.
@@ -143,7 +131,13 @@ abstract class StatefulIsolate with _IsolateBase implements IsolateGetter {
   }
 }
 
-abstract class SpecialisedIsolateGetter<Q, R> {
+/// Interface for exposing just the [isolate] function for a
+/// [_TailoredStatefulIsolate].
+///
+/// The abstract class [TailoredStatefulIsolate] contains  all the logic for
+/// integral_isolates. Most likely implementing the [IsolateGetter] interface
+/// should just extend the [StatefulIsolate] class.
+abstract class TailoredIsolateGetter<Q, R> {
   /// The compute function to implement.
   ///
   /// Example could be [StatefulIsolate.isolate].
@@ -154,9 +148,19 @@ abstract class SpecialisedIsolateGetter<Q, R> {
   });
 }
 
-abstract class _SpecializedStatefulIsolate<Q, R>
+class _TailoredStatefulIsolate<Q, R>
     with _IsolateBase<Q, R>
-    implements SpecialisedIsolateGetter<Q, R> {
+    implements TailoredIsolateGetter<Q, R> {
+  @override
+  final BackpressureStrategy<Q, R> backpressureStrategy;
+
+  _TailoredStatefulIsolate({
+    BackpressureStrategy<Q, R>? backpressureStrategy,
+    bool autoInit = true,
+  }) : backpressureStrategy = backpressureStrategy ?? NoBackPressureStrategy() {
+    if (autoInit) init();
+  }
+
   @override
   Future<R> isolate(
     IsolateCallback<Q, R> callback,

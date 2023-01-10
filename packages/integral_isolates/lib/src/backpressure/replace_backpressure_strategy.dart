@@ -16,7 +16,7 @@ class ReplaceBackpressureStrategy<Q, R> extends BackpressureStrategy<Q, R>
     with OneSizedQueue<Q, R> {
   @override
   Future add(
-    Completer completer,
+    Completer<R> completer,
     IsolateConfiguration<Q, R> isolateConfiguration,
   ) async {
     if (hasNext()) drop(takeNext());

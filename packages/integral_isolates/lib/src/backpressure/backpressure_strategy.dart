@@ -7,7 +7,7 @@ import 'package:integral_isolates/src/isolate_configuration.dart';
 ///
 /// Used internally to keep track of jobs waiting for execution.
 typedef BackpressureConfiguration<Q, R>
-    = MapEntry<Completer, IsolateConfiguration<Q, R>>;
+    = MapEntry<Completer<R>, IsolateConfiguration<Q, R>>;
 
 /// Class to implement to support a backpressure strategy. This is used to make
 /// sure job queues are handled properly.
@@ -18,6 +18,8 @@ typedef BackpressureConfiguration<Q, R>
 /// discards the queue upon adding a new job.
 /// [DiscardNewBackPressureStrategy] that has a job queue with size one, and
 /// as long as the queue is populated a new job will not be added.
+/// [CombineBackPressureStrategy] that has a job queue with size one, and uses
+/// a combine function to combine input data on back pressure.
 abstract class BackpressureStrategy<Q, R> {
   /// Function that returns true if the back pressure strategy has a job in
   /// queue.
@@ -32,7 +34,7 @@ abstract class BackpressureStrategy<Q, R> {
 
   /// Adds another job to the queue.
   void add(
-    Completer completer,
+    Completer<R> completer,
     IsolateConfiguration<Q, R> isolateConfiguration,
   );
 

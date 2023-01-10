@@ -15,7 +15,7 @@ void main() {
     Future<List<int>> runIsolate(
       BackpressureStrategy<int, int> strategy,
     ) async {
-      final isolated = Isolated.specialized<int, int>(
+      final isolated = Isolated.tailored<int, int>(
         backpressureStrategy: strategy,
         autoInit: false,
       );
@@ -73,6 +73,13 @@ void main() {
     });
 
     test('Combine backpressure strategy', () async {
+      final isolate = Isolated.tailored<int, int>(
+        backpressureStrategy: CombineBackPressureStrategy(
+          (oldData, newData) => oldData + newData,
+        ),
+      );
+      isolate.isolate((message) => message + 2, 2);
+
       final responses = await runIsolate(
         CombineBackPressureStrategy<int, int>((oldData, newData) {
           return oldData + newData;

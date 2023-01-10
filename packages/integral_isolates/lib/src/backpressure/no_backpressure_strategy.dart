@@ -19,7 +19,7 @@ class NoBackPressureStrategy<Q, R> extends BackpressureStrategy<Q, R> {
 
   @override
   void add(
-    Completer completer,
+    Completer<R> completer,
     IsolateConfiguration<Q, R> isolateConfiguration,
   ) {
     _backstack
