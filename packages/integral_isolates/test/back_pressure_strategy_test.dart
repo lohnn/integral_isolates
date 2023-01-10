@@ -9,7 +9,7 @@ int _testFunction(int input) {
 }
 
 String _testFunctionStr(String text) {
-  sleep(const Duration(milliseconds: 100));
+  sleep(const Duration(milliseconds: 50));
   return 'prefix: $text';
 }
 
@@ -26,7 +26,9 @@ void main() {
 
       final responses = [];
 
+      int delayMultiplier = 0;
       Future temp(dynamic input) async {
+        await Future.delayed(Duration(milliseconds: 50 * delayMultiplier++));
         if (input is String) {
           try {
             final value = await isolated.isolate(_testFunctionStr, input);
@@ -35,7 +37,6 @@ void main() {
             // Noop
           }
         } else if (input is int) {
-          await Future.delayed(Duration(milliseconds: 50 * input));
           try {
             final value = await isolated.isolate(_testFunction, input);
             responses.add(value);
@@ -73,17 +74,17 @@ void main() {
 
     test('No backpressure strategy', () async {
       final responses = await runIsolate(NoBackPressureStrategy());
-      expect(responses, ['prefix: test', 1, 2, 3, 4, 5]);
+      expect(responses, [1, 'prefix: test', 2, 3, 4, 5]);
     });
 
     test('Discard new backpressure strategy', () async {
       final responses = await runIsolate(DiscardNewBackPressureStrategy());
-      expect(responses, ['prefix: test', 1, 3]);
+      expect(responses, [1, 'prefix: test']);
     });
 
     test('Replace backpressure strategy', () async {
       final responses = await runIsolate(ReplaceBackpressureStrategy());
-      expect(responses, ['prefix: test', 2, 5]);
+      expect(responses, [1, 5]);
     });
   });
 }
