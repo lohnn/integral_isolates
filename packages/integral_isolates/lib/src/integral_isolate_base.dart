@@ -39,6 +39,7 @@ mixin _IsolateBase<Q, R> {
 
   /// If the worker is currently running, this bool will be set to true
   bool _isRunning = false;
+  bool _disposed = false;
 
   Future _handleIsolateCall() async {
     if (_initCompleter == null) {
@@ -51,6 +52,11 @@ mixin _IsolateBase<Q, R> {
       final configuration = backpressureStrategy.takeNext();
 
       try {
+        if (_disposed) {
+          configuration.key.completeError(IsolateClosedDropException());
+          return;
+        }
+
         _mainToIsolatePort.send(configuration.value);
 
         final response = await _isolateToMainPort.next;
@@ -77,8 +83,7 @@ mixin _IsolateBase<Q, R> {
   /// After this function is called, you cannot continue using the isolate.
   @mustCallSuper
   Future dispose() async {
-    // TODO(lohnn): prevent user from adding more work to the isolate after
-    // this function is called.
+    _disposed = true;
     _closePort?.send('close');
     _isolateToMainPort.cancel();
     backpressureStrategy.dispose();
