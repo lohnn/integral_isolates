@@ -71,5 +71,14 @@ void main() {
       final responses = await runIsolate(ReplaceBackpressureStrategy());
       expect(responses, [1, 5]);
     });
+
+    test('Combine backpressure strategy', () async {
+      final responses = await runIsolate(
+        CombineBackPressureStrategy<int, int>((oldData, newData) {
+          return oldData + newData;
+        }),
+      );
+      expect(responses, [1, 14]);
+    });
   });
 }

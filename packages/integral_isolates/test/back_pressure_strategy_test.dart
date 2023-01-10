@@ -86,5 +86,15 @@ void main() {
       final responses = await runIsolate(ReplaceBackpressureStrategy());
       expect(responses, [1, 5]);
     });
+
+    test('Combine backpressure strategy', () async {
+      final responses = await runIsolate(
+        CombineBackPressureStrategy((oldData, newData) {
+          if (oldData is num && newData is num) return oldData + newData;
+          return newData;
+        }),
+      );
+      expect(responses, [1, 14]);
+    });
   });
 }
