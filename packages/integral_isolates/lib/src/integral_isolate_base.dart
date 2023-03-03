@@ -26,8 +26,6 @@ mixin _IsolateBase<Q, R> {
       isolateToMainPort.sendPort,
     );
 
-    _isolateToMainPort = _isolateToMainPort;
-
     final isolateSetupResponse =
         await _isolateToMainPort.next as _IsolateSetupResponse;
     _mainToIsolatePort = isolateSetupResponse.mainToIsolatePort;
