@@ -1,6 +1,15 @@
-part of 'integral_isolates.dart';
+// ignore_for_file: public_member_api_docs
 
-mixin _IsolateBase<Q, R> {
+import 'dart:async';
+import 'dart:isolate';
+
+import 'package:async/async.dart';
+import 'package:integral_isolates/integral_isolates.dart';
+import 'package:integral_isolates/src/isolate_configuration.dart';
+import 'package:meta/meta.dart';
+
+@internal
+mixin IsolateBase<Q, R> {
   late StreamQueue _isolateToMainPort;
   late SendPort _mainToIsolatePort;
   SendPort? _closePort;
@@ -31,7 +40,7 @@ mixin _IsolateBase<Q, R> {
     _mainToIsolatePort = isolateSetupResponse.mainToIsolatePort;
     _closePort = isolateSetupResponse.closePort;
 
-    _handleIsolateCall();
+    handleIsolateCall();
     _initCompleter!.complete();
   }
 
@@ -39,7 +48,8 @@ mixin _IsolateBase<Q, R> {
   bool _isRunning = false;
   bool _disposed = false;
 
-  Future _handleIsolateCall() async {
+  @internal
+  Future handleIsolateCall() async {
     if (_initCompleter == null) {
       throw InitException();
     } else if (!_initCompleter!.isCompleted) {
@@ -73,7 +83,7 @@ mixin _IsolateBase<Q, R> {
         configuration.key.completeError(e, stackTrace);
       }
       _isRunning = false;
-      _handleIsolateCall();
+      handleIsolateCall();
     }
   }
 

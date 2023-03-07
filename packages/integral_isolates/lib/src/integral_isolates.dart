@@ -2,14 +2,11 @@ library use_isolate;
 
 import 'dart:async';
 import 'dart:developer';
-import 'dart:isolate';
 
-import 'package:async/async.dart';
 import 'package:integral_isolates/integral_isolates.dart';
+import 'package:integral_isolates/src/integral_isolate_base.dart';
 import 'package:integral_isolates/src/isolate_configuration.dart';
 import 'package:meta/meta.dart';
-
-part 'integral_isolate_base.dart';
 
 /// Minimal class that wraps [StatefulIsolate] that supports changing
 /// backpressure strategy and auto init from constructor.
@@ -100,7 +97,7 @@ abstract class IsolateGetter {
 ///
 /// [Isolated] is extending this class and is a class for simple use of the
 /// [isolate] function.
-abstract class StatefulIsolate with _IsolateBase implements IsolateGetter {
+abstract class StatefulIsolate with IsolateBase implements IsolateGetter {
   /// A function that runs the provided `callback` on the long running isolate
   /// and (eventually) returns the value returned by `callback`.
   ///
@@ -126,7 +123,7 @@ abstract class StatefulIsolate with _IsolateBase implements IsolateGetter {
     );
 
     backpressureStrategy.add(completer, isolateConfiguration);
-    _handleIsolateCall();
+    handleIsolateCall();
     return completer.future;
   }
 }
@@ -149,7 +146,7 @@ abstract class TailoredIsolateGetter<Q, R> {
 }
 
 class _TailoredStatefulIsolate<Q, R>
-    with _IsolateBase<Q, R>
+    with IsolateBase<Q, R>
     implements TailoredIsolateGetter<Q, R> {
   @override
   final BackpressureStrategy<Q, R> backpressureStrategy;
@@ -180,7 +177,7 @@ class _TailoredStatefulIsolate<Q, R>
     );
 
     backpressureStrategy.add(completer, isolateConfiguration);
-    _handleIsolateCall();
+    handleIsolateCall();
     return completer.future;
   }
 }
