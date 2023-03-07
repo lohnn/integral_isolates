@@ -63,7 +63,11 @@ mixin _IsolateBase<Q, R> {
         } else if (response is _ErrorIsolateResponse) {
           configuration.key.completeError(response.error, response.stackTrace);
         } else {
-          // TODO(lohnn): Should not be possible? Notify the developer of issue?
+          assert(
+            false,
+            'This should not have been possible, please open an issue to the '
+            'developer.',
+          );
         }
       } catch (e, stackTrace) {
         configuration.key.completeError(e, stackTrace);
