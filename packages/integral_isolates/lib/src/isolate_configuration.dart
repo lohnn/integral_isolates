@@ -6,7 +6,7 @@ import 'dart:developer';
 import 'package:integral_isolates/integral_isolates.dart';
 import 'package:meta/meta.dart';
 
-@protected
+@internal
 @immutable
 class IsolateConfiguration<Q, R> {
   const IsolateConfiguration(
