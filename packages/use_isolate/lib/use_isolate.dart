@@ -63,16 +63,16 @@ class _IsolateHook extends Hook<IsolateComputeImpl> {
 }
 
 class _IsolateHookState extends HookState<IsolateComputeImpl, _IsolateHook> {
-  late final Isolated _isolate;
+  late final Isolated _isolated;
 
   @override
   Future initHook() async {
-    _isolate = Isolated(
+    _isolated = Isolated(
       backpressureStrategy:
           hook.backpressureStrategy ?? NoBackPressureStrategy(),
     );
   }
 
   @override
-  IsolateComputeImpl build(BuildContext context) => _isolate.isolate;
+  IsolateComputeImpl build(BuildContext context) => _isolated.isolate;
 }
