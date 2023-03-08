@@ -5,7 +5,7 @@ import 'package:test/test.dart';
 
 void main() {
   group('Exceptions when queuing jobs should not break upcoming jobs', () {
-    final isolated = Isolated();
+    final isolated = StatefulIsolate();
     final isolate = isolated.isolate;
 
     test('Send different data types and expect answers', () async {

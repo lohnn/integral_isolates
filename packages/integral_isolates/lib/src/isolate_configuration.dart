@@ -3,7 +3,7 @@
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:integral_isolates/integral_isolates.dart';
+import 'package:integral_isolates/src/integral_isolates.dart';
 import 'package:meta/meta.dart';
 
 @internal

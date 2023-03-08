@@ -6,3 +6,5 @@ export 'package:integral_isolates/src/backpressure/replace_backpressure_strategy
 export 'package:integral_isolates/src/exceptions/drop_exception.dart';
 export 'package:integral_isolates/src/exceptions/init_exception.dart';
 export 'package:integral_isolates/src/integral_isolates.dart';
+export 'package:integral_isolates/src/stateful_isolate.dart';
+export 'package:integral_isolates/src/tailored_stateful_isolate.dart';

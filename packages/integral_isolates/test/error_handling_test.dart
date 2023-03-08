@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 void main() {
   group('Lifecycle errors', () {
     test('Throws error when running after dispose', () async {
-      final isolated = Isolated.tailored<int, int>();
+      final isolated = TailoredStatefulIsolate<int, int>();
       final isolate = isolated.isolate;
 
       expect(
