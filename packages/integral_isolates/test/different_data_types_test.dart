@@ -5,8 +5,20 @@ import 'package:test/test.dart';
 
 void main() {
   group('Exceptions when queuing jobs should not break upcoming jobs', () {
-    final isolated = Isolated();
+    final isolated = StatefulIsolate();
     final isolate = isolated.isolate;
+
+    test('Send different data types and expect answers', () async {
+      expect(
+        await isolate((number) => number + 2, 1),
+        equals(3),
+      );
+
+      expect(
+        await isolate((text) => 'prefix: $text', 'testing'),
+        equals('prefix: testing'),
+      );
+    });
 
     test('Send unsupported data type should throw exception', () async {
       expect(

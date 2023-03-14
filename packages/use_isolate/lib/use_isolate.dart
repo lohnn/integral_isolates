@@ -59,23 +59,20 @@ class _IsolateHook extends Hook<IsolateComputeImpl> {
   const _IsolateHook(this.backpressureStrategy);
 
   @override
-  _IsolateHookState createState() => _IsolateHookState(
-        backpressureStrategy ?? NoBackPressureStrategy(),
-      );
+  _IsolateHookState createState() => _IsolateHookState();
 }
 
-class _IsolateHookState extends HookState<IsolateComputeImpl, _IsolateHook>
-    with StatefulIsolate {
-  _IsolateHookState(this.backpressureStrategy);
-
-  @override
-  final BackpressureStrategy backpressureStrategy;
+class _IsolateHookState extends HookState<IsolateComputeImpl, _IsolateHook> {
+  late final StatefulIsolate _isolated;
 
   @override
   Future initHook() async {
-    init();
+    _isolated = StatefulIsolate(
+      backpressureStrategy:
+          hook.backpressureStrategy ?? NoBackPressureStrategy(),
+    );
   }
 
   @override
-  IsolateComputeImpl build(BuildContext context) => isolate;
+  IsolateComputeImpl build(BuildContext context) => _isolated.isolate;
 }

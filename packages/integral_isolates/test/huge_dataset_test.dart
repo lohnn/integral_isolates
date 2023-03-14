@@ -8,7 +8,7 @@ import 'package:test/test.dart';
 
 void main() {
   group('Send huge ByteArray through to isolate', () {
-    final isolate = Isolated(
+    final isolate = StatefulIsolate(
       backpressureStrategy: DiscardNewBackPressureStrategy(),
     );
 

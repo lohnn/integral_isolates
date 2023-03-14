@@ -3,10 +3,10 @@
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:integral_isolates/integral_isolates.dart';
+import 'package:integral_isolates/src/integral_isolates.dart';
 import 'package:meta/meta.dart';
 
-@protected
+@internal
 @immutable
 class IsolateConfiguration<Q, R> {
   const IsolateConfiguration(
@@ -29,8 +29,21 @@ class IsolateConfiguration<Q, R> {
     );
   }
 
+  IsolateConfiguration<Q, R> copyWith({required Q message}) {
+    return IsolateConfiguration(
+      callback,
+      message,
+      debugLabel,
+      flowId,
+    );
+  }
+
   @override
   String toString() {
-    return 'IsolateConfiguration(message: $message, debugLabel: $debugLabel, flowId: $flowId)';
+    return 'IsolateConfiguration('
+        'message: $message, '
+        'debugLabel: $debugLabel, '
+        'flowId: $flowId'
+        ')';
   }
 }

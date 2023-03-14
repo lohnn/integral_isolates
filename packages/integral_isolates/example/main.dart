@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:integral_isolates/integral_isolates.dart';
 
 void main() async {
-  final isolated = Isolated();
+  final isolated = StatefulIsolate();
 
   /// Function that halts the thread while looping and printing.
   Future<void> threadSleepComputation(int input) async {
