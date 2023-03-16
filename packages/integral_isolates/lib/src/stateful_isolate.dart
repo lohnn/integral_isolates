@@ -16,11 +16,23 @@ typedef IsolateComputeImpl = Future<R> Function<Q, R>(
   String? debugLabel,
 });
 
+typedef IsolateStreamComputeImpl = Future<R> Function<Q, R>(
+  IsolateStreamCallback<Q, R> callback,
+  Q message, {
+  String? debugLabel,
+});
+
 /// Interface for exposing the [isolate] function for a [StatefulIsolate].
 ///
 /// Useful for when wrapping the functionality and just want to expose the
 /// computation function.
 abstract class IsolateGetter {
+  Stream<R> isolateStream<Q, R>(
+    IsolateStreamCallback<Q, R> callback,
+    Q message, {
+    String? debugLabel,
+  });
+
   /// The computation function, a function used the same way as Flutter's
   /// compute function, but for a long lived isolate.
   Future<R> isolate<Q, R>(
@@ -121,5 +133,14 @@ class StatefulIsolate with IsolateBase implements IsolateGetter {
     backpressureStrategy.add(completer, isolateConfiguration);
     handleIsolateCall();
     return completer.future;
+  }
+
+  @override
+  Stream<R> isolateStream<Q, R>(
+    IsolateStreamCallback<Q, R> callback,
+    Q message, {
+    String? debugLabel,
+  }) {
+    return callback(message);
   }
 }
