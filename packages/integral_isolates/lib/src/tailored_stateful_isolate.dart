@@ -5,6 +5,21 @@ import 'package:integral_isolates/integral_isolates.dart';
 import 'package:integral_isolates/src/integral_isolate_base.dart';
 import 'package:integral_isolates/src/isolate_configuration.dart';
 
+/// Data type of the implementation of the computation function.
+///
+/// Can be used as data type for the computation function, for example when
+/// returning the [TailoredStatefulIsolate.isolate] as a return type of a
+/// function.
+///
+/// [Q] is the input parameter type.
+///
+/// [R] is the response type.
+typedef TailoredIsolateComputeImpl<Q, R> = Future<R> Function(
+  IsolateCallback<Q, R> callback,
+  Q message, {
+  String? debugLabel,
+});
+
 /// Interface for exposing the [isolate] function for a
 /// [TailoredStatefulIsolate].
 ///
@@ -100,7 +115,7 @@ class TailoredStatefulIsolate<Q, R>
     final Flow flow = Flow.begin();
 
     final completer = Completer<R>();
-    final isolateConfiguration = IsolateConfiguration(
+    final isolateConfiguration = IsolateConfiguration<Q, R>(
       callback,
       message,
       debugLabel,
