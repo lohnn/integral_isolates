@@ -4,8 +4,8 @@
 
  - deprecated the class `Isolated` in favor of `StatefulIsolate`. The class `TailoredStatefulIsolate` was also added, adding support for an isolate that allows for specifying input and output types.
 
- - **FEAT**: specialized/tailored isolated (#14).
- - **BREAKING** **FEAT**: added useTailoredIsolate and updated documentation (#16).
+ - **BREAKING** **FEAT**: specialized/tailored isolated (#14).
+ - **DOCS**: added useTailoredIsolate and updated documentation (#16).
 
 ## 0.3.0+2
 
