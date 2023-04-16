@@ -48,6 +48,21 @@ class IsolateTestingWidget extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final isolate = useIsolate();
+    final tailoredIsolate = useTailoredIsolate<_MethodInput, String>(
+      backpressureStrategy: CombineBackPressureStrategy(
+        (oldData, newData) {
+          return _MethodInput(oldData.text + newData.text);
+        },
+      ),
+    );
+
+    Future<String?> safeHello(_MethodInput input) async {
+      try {
+        return await tailoredIsolate(_hello, input);
+      } catch (e) {
+        return null;
+      }
+    }
 
     return ListView(
       children: [
@@ -117,6 +132,22 @@ class IsolateTestingWidget extends HookWidget {
             print(responses);
           },
           child: const Text('Two in parallel with future wait'),
+        ),
+        TextButton(
+          onPressed: () async {
+            final responses = await Future.wait(
+              [
+                safeHello(_MethodInput("hi")),
+                safeHello(
+                  _MethodInput("ho", delay: const Duration(milliseconds: 500)),
+                ),
+                safeHello(_MethodInput("hi")),
+                safeHello(_MethodInput("hi")),
+              ],
+            );
+            print(responses);
+          },
+          child: const Text('Tailored isolate'),
         ),
         TextButton(
           onPressed: () async {

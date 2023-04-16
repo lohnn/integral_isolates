@@ -7,11 +7,11 @@ but using a long lived isolate. For example:
 
 ```dart
 void main() async {
-  final isolated = Isolated();
-  final isolate = isolated.isolate;
-  print(await isolate(_isPrime, 7));
-  print(await isolate(_isPrime, 42));
-  isolated.dispose();
+  final statefulIsolate = StatefulIsolate();
+  final computation = statefulIsolate.isolate;
+  print(await computation(_isPrime, 7));
+  print(await computation(_isPrime, 42));
+  statefulIsolate.dispose();
 }
 
 bool _isPrime(int value) {
@@ -44,6 +44,12 @@ Currently supported strategies can be found in the
 ## Additional information
 
 The API of this package is not final, and is subject to change.
+
+### Breaking change
+
+* `integral_isolates` v0.4.0: deprecated the class `Isolated` in favor of `StatefulIsolate`. The class
+`TailoredStatefulIsolate` was also added, adding support for an isolate that allows for specifying input and output
+types.
 
 ### Are you using hooks?
 
