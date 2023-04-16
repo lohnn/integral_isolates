@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2023-04-16
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - [`integral_isolates` - `v0.4.0`](#integral_isolates---v040)
+ - [`use_isolate` - `v0.2.0`](#use_isolate---v020)
+
+Packages with other changes:
+
+ - There are no other changes in this release.
+
+---
+
+#### `integral_isolates` - `v0.4.0`
+
+ - deprecated the class `Isolated` in favor of `StatefulIsolate`. The class `TailoredStatefulIsolate` was also added, adding support for an isolate that allows for specifying input and output types.
+
+ - **FEAT**: specialized/tailored isolated (#14).
+ - **BREAKING** **FEAT**: added useTailoredIsolate and updated documentation (#16).
+
+#### `use_isolate` - `v0.2.0`
+
+ - **FEAT**: specialized/tailored isolated (#14).
+ - **BREAKING** **FEAT**: added useTailoredIsolate and updated documentation (#16).
+
+
 ## 2022-12-29
 
 ### Changes
