@@ -3,7 +3,7 @@
 > Note: This release has breaking changes.
 
  - **FEAT**: specialized/tailored isolated (#14).
- - **BREAKING** **FEAT**: added useTailoredIsolate and updated documentation (#16).
+ - **FEAT**: added useTailoredIsolate (#16).
 
 ## 0.1.0+5
 
