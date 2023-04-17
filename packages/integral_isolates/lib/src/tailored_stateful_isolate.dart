@@ -122,7 +122,12 @@ class TailoredStatefulIsolate<Q, R>
       flow.id,
     );
 
-    backpressureStrategy.add(completer, isolateConfiguration);
+    backpressureStrategy.add(
+      BackpressureConfiguration.future(
+        completer,
+        isolateConfiguration,
+      ),
+    );
     handleIsolateCall();
     return completer.future;
   }

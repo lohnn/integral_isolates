@@ -1,7 +1,4 @@
-import 'dart:async';
-
 import 'package:integral_isolates/src/backpressure/backpressure_strategy.dart';
-import 'package:integral_isolates/src/isolate_configuration.dart';
 
 /// An implementation of [BackpressureStrategy] that uses a FIFO stack for
 /// handling backpressure.
@@ -18,12 +15,8 @@ class NoBackPressureStrategy<Q, R> extends BackpressureStrategy<Q, R> {
   final List<BackpressureConfiguration<Q, R>> _backstack = [];
 
   @override
-  void add(
-    Completer<R> completer,
-    IsolateConfiguration<Q, R> isolateConfiguration,
-  ) {
-    _backstack
-        .add(BackpressureConfiguration<Q, R>(completer, isolateConfiguration));
+  void add(BackpressureConfiguration<Q, R> configuration) {
+    _backstack.add(configuration);
   }
 
   @override

@@ -41,26 +41,23 @@ class CombineBackPressureStrategy<Q, R> extends BackpressureStrategy<Q, R>
   CombineBackPressureStrategy(this._combineFunction);
 
   @override
-  void add(
-    Completer<R> completer,
-    IsolateConfiguration<Q, R> isolateConfiguration,
-  ) {
+  void add(BackpressureConfiguration<Q, R> configuration) {
     if (hasNext()) {
       final queuedConfiguration = takeNext();
       drop(queuedConfiguration);
 
       final newMessage = _combineFunction(
-        queuedConfiguration.value.message,
-        isolateConfiguration.message,
+        queuedConfiguration.configuration.message,
+        configuration.configuration.message,
       );
 
-      final combinedConfiguration = isolateConfiguration.copyWith(
+      final combinedConfiguration = configuration.configuration.copyWith(
         message: newMessage,
       );
 
-      queue = BackpressureConfiguration(completer, combinedConfiguration);
+      queue = configuration.copyWith(combinedConfiguration);
     } else {
-      queue = BackpressureConfiguration(completer, isolateConfiguration);
+      queue = configuration;
     }
   }
 }

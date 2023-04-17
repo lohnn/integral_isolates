@@ -130,7 +130,9 @@ class StatefulIsolate with IsolateBase implements IsolateGetter {
       flow.id,
     );
 
-    backpressureStrategy.add(completer, isolateConfiguration);
+    backpressureStrategy.add(
+      BackpressureConfiguration.future(completer, isolateConfiguration),
+    );
     handleIsolateCall();
     return completer.future;
   }
@@ -141,6 +143,25 @@ class StatefulIsolate with IsolateBase implements IsolateGetter {
     Q message, {
     String? debugLabel,
   }) {
+    debugLabel ??= 'compute';
+
+    final Flow flow = Flow.begin();
+
+    // TODO(lohnn): Implement onListen?
+    // TODO(lohnn): Implement onPause?
+    // TODO(lohnn): Implement onResume?
+    final streamController = StreamController();
+
+    final isolateConfiguration = IsolateConfiguration(
+      callback,
+      message,
+      debugLabel,
+      flow.id,
+    );
+
+    backpressureStrategy.add(
+      BackpressureConfiguration.stream(streamController, isolateConfiguration),
+    );
     return callback(message);
   }
 }

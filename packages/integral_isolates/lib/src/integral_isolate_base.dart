@@ -61,17 +61,21 @@ mixin IsolateBase<Q, R> {
 
       try {
         if (_disposed) {
-          configuration.key.completeError(IsolateClosedDropException());
+          configuration.closeError(IsolateClosedDropException());
           return;
         }
 
-        _mainToIsolatePort.send(configuration.value);
+        _mainToIsolatePort.send(configuration.configuration);
 
         final response = await _isolateToMainPort.next;
+        // TODO(lohnn): Maybe this would need to be rethought for streams?
         if (response is _SuccessIsolateResponse) {
-          configuration.key.complete(response.response as R);
+          // TODO(lohnn): See if we could move this into the Configuration class
+          if (configuration is FutureBackpressureConfiguration<Q, R>) {
+            configuration.completer.complete(response.response as R);
+          } else if (configuration is StreamBackpressureConfiguration<Q, R>) {}
         } else if (response is _ErrorIsolateResponse) {
-          configuration.key.completeError(response.error, response.stackTrace);
+          configuration.closeError(response.error, response.stackTrace);
         } else {
           assert(
             false,
@@ -80,7 +84,7 @@ mixin IsolateBase<Q, R> {
           );
         }
       } catch (e, stackTrace) {
-        configuration.key.completeError(e, stackTrace);
+        configuration.closeError(e, stackTrace);
       }
       _isRunning = false;
       handleIsolateCall();
