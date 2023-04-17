@@ -22,4 +22,4 @@ class Isolated extends StatefulIsolate {
 /// from the official Flutter documentation.
 typedef IsolateCallback<Q, R> = FutureOr<R> Function(Q message);
 
-typedef IsolateStreamCallback<Q, R> = Stream<R> Function(Q message);
+typedef IsolateStream<Q, R> = Stream<R> Function(Q message);

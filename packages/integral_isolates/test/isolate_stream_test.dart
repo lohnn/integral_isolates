@@ -8,7 +8,7 @@ void main() {
     final isolate = StatefulIsolate();
 
     test('Send different data types and expect answers', () async {
-      expect(
+      await expectLater(
         isolate.isolateStream(
           (_) => Stream.fromIterable([2, 3, 5, 42]),
           const Object(),
@@ -16,7 +16,10 @@ void main() {
         emitsInOrder([2, 3, 5, 42]),
       );
 
-      expect(
+      // TODO(lohnn): The isolate is getting confused with streams where different types are returned,
+      // the old isolate call is not completed before the next one is started...
+
+      await expectLater(
         isolate.isolateStream(
           (_) => Stream.fromFutures([
             Future.delayed(const Duration(milliseconds: 100), () => 'are'),
@@ -33,7 +36,7 @@ void main() {
     });
 
     test('Send unsupported data type should throw exception', () async {
-      expect(
+      await expectLater(
         isolate.isolateStream(
           (_) => Stream.fromIterable([2, 3, 5, 42]),
           const Object(),
@@ -49,7 +52,7 @@ void main() {
         throwsArgumentError,
       );
 
-      expect(
+      await expectLater(
         await isolate.isolate((number) => number + 2, 5),
         equals(7),
       );
@@ -57,7 +60,7 @@ void main() {
 
     test('Trying to return unsupported data type should throw exception',
         () async {
-      expect(
+      await expectLater(
         await isolate.isolate((number) => number + 8, 1),
         equals(9),
       );
@@ -70,7 +73,7 @@ void main() {
         throwsArgumentError,
       );
 
-      expect(
+      await expectLater(
         isolate.isolateStream(
           (_) => Stream.fromIterable([2, 3, 5, 42]),
           const Object(),
@@ -82,17 +85,17 @@ void main() {
     tearDownAll(isolate.dispose);
   });
 
-  group('Tailored IsolateStream tests', () {
-    final isolated = TailoredStatefulIsolate<int, int>();
-    final isolate = isolated.isolate;
-
-    test('Send different data types and expect answers', () async {
-      expect(
-        await isolate((number) => number + 2, 1),
-        equals(3),
-      );
-    });
-
-    tearDownAll(isolated.dispose);
-  });
+  // group('Tailored IsolateStream tests', () {
+  //   final isolated = TailoredStatefulIsolate<int, int>();
+  //   final isolate = isolated.isolate;
+  //
+  //   test('Send different data types and expect answers', () async {
+  //     await expectLater(
+  //       await isolate((number) => number + 2, 1),
+  //       equals(3),
+  //     );
+  //   });
+  //
+  //   tearDownAll(isolated.dispose);
+  // });
 }

@@ -17,7 +17,7 @@ typedef IsolateComputeImpl = Future<R> Function<Q, R>(
 });
 
 typedef IsolateStreamComputeImpl = Future<R> Function<Q, R>(
-  IsolateStreamCallback<Q, R> callback,
+  IsolateStream<Q, R> callback,
   Q message, {
   String? debugLabel,
 });
@@ -28,7 +28,7 @@ typedef IsolateStreamComputeImpl = Future<R> Function<Q, R>(
 /// computation function.
 abstract class IsolateGetter {
   Stream<R> isolateStream<Q, R>(
-    IsolateStreamCallback<Q, R> callback,
+    IsolateStream<Q, R> callback,
     Q message, {
     String? debugLabel,
   });
@@ -123,7 +123,7 @@ class StatefulIsolate with IsolateBase implements IsolateGetter {
     final Flow flow = Flow.begin();
 
     final completer = Completer<R>();
-    final isolateConfiguration = IsolateConfiguration(
+    final isolateConfiguration = FutureIsolateConfiguration(
       callback,
       message,
       debugLabel,
@@ -131,7 +131,7 @@ class StatefulIsolate with IsolateBase implements IsolateGetter {
     );
 
     backpressureStrategy.add(
-      BackpressureConfiguration.future(completer, isolateConfiguration),
+      FutureBackpressureConfiguration(completer, isolateConfiguration),
     );
     handleIsolateCall();
     return completer.future;
@@ -139,7 +139,7 @@ class StatefulIsolate with IsolateBase implements IsolateGetter {
 
   @override
   Stream<R> isolateStream<Q, R>(
-    IsolateStreamCallback<Q, R> callback,
+    IsolateStream<Q, R> callback,
     Q message, {
     String? debugLabel,
   }) {
@@ -150,9 +150,9 @@ class StatefulIsolate with IsolateBase implements IsolateGetter {
     // TODO(lohnn): Implement onListen?
     // TODO(lohnn): Implement onPause?
     // TODO(lohnn): Implement onResume?
-    final streamController = StreamController();
+    final streamController = StreamController<R>();
 
-    final isolateConfiguration = IsolateConfiguration(
+    final isolateConfiguration = StreamIsolateConfiguration(
       callback,
       message,
       debugLabel,
@@ -160,8 +160,10 @@ class StatefulIsolate with IsolateBase implements IsolateGetter {
     );
 
     backpressureStrategy.add(
-      BackpressureConfiguration.stream(streamController, isolateConfiguration),
+      StreamBackpressureConfiguration(streamController, isolateConfiguration),
     );
-    return callback(message);
+
+    handleIsolateCall();
+    return streamController.stream;
   }
 }

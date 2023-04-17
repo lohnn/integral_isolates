@@ -67,21 +67,38 @@ mixin IsolateBase<Q, R> {
 
         _mainToIsolatePort.send(configuration.configuration);
 
-        final response = await _isolateToMainPort.next;
-        // TODO(lohnn): Maybe this would need to be rethought for streams?
-        if (response is _SuccessIsolateResponse) {
-          // TODO(lohnn): See if we could move this into the Configuration class
-          if (configuration is FutureBackpressureConfiguration<Q, R>) {
+        if (configuration is StreamBackpressureConfiguration<Q, R>) {
+          dynamic response;
+          while (true) {
+            response = await _isolateToMainPort.next;
+            if (response is! _PartialSuccessIsolateResponse) break;
+            configuration.streamController.add(response.response as R);
+          }
+          if (response is _StreamClosedIsolateResponse) {
+            configuration.streamController.close();
+          } else if (response is _ErrorIsolateResponse) {
+            configuration.closeError(response.error, response.stackTrace);
+          } else {
+            assert(
+              false,
+              'This should not have been possible, please open an issue to the '
+              'developer.',
+            );
+          }
+        } else if (configuration is FutureBackpressureConfiguration<Q, R>) {
+          final response = await _isolateToMainPort.next;
+          if (response is _SuccessIsolateResponse) {
+            // TODO(lohnn): See if we could move this into the Configuration class
             configuration.completer.complete(response.response as R);
-          } else if (configuration is StreamBackpressureConfiguration<Q, R>) {}
-        } else if (response is _ErrorIsolateResponse) {
-          configuration.closeError(response.error, response.stackTrace);
-        } else {
-          assert(
-            false,
-            'This should not have been possible, please open an issue to the '
-            'developer.',
-          );
+          } else if (response is _ErrorIsolateResponse) {
+            configuration.closeError(response.error, response.stackTrace);
+          } else {
+            assert(
+              false,
+              'This should not have been possible, please open an issue to the '
+              'developer.',
+            );
+          }
         }
       } catch (e, stackTrace) {
         configuration.closeError(e, stackTrace);
@@ -126,12 +143,26 @@ Future _isolate(SendPort isolateToMainPort) async {
     try {
       if (data is IsolateConfiguration) {
         try {
-          isolateToMainPort.send(
-            _IsolateResponse.success(
-              data.flowId,
-              await data.applyAndTime(),
-            ),
-          );
+          if (data is FutureIsolateConfiguration) {
+            isolateToMainPort.send(
+              _SuccessIsolateResponse(
+                data.flowId,
+                await data.applyAndTime(),
+              ),
+            );
+          } else if (data is StreamIsolateConfiguration) {
+            await for (final event in data.applyAndTime()) {
+              isolateToMainPort.send(
+                _PartialSuccessIsolateResponse(
+                  data.flowId,
+                  await event,
+                ),
+              );
+            }
+            isolateToMainPort.send(
+              _StreamClosedIsolateResponse(data.flowId),
+            );
+          }
         } catch (error, stackTrace) {
           isolateToMainPort.send(
             _IsolateResponse.error(data.flowId, error, stackTrace),
@@ -159,9 +190,6 @@ abstract class _IsolateResponse<R> {
 
   const _IsolateResponse(this.flowId);
 
-  const factory _IsolateResponse.success(int flowId, R response) =
-      _SuccessIsolateResponse;
-
   const factory _IsolateResponse.error(
     int flowId,
     Object error,
@@ -173,6 +201,14 @@ class _SuccessIsolateResponse<R> extends _IsolateResponse<R> {
   final R response;
 
   const _SuccessIsolateResponse(super.flowId, this.response);
+}
+
+class _PartialSuccessIsolateResponse<R> extends _SuccessIsolateResponse<R> {
+  const _PartialSuccessIsolateResponse(super.flowId, super.response);
+}
+
+class _StreamClosedIsolateResponse<R> extends _IsolateResponse<R> {
+  const _StreamClosedIsolateResponse(super.flowId);
 }
 
 class _ErrorIsolateResponse<R> extends _IsolateResponse<R> {

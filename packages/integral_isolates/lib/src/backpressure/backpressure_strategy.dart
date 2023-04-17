@@ -19,16 +19,6 @@ abstract class BackpressureConfiguration<Q, R> {
   BackpressureConfiguration<Q, R> copyWith(
     IsolateConfiguration<Q, R> isolateConfiguration,
   );
-
-  factory BackpressureConfiguration.future(
-    Completer<R> completer,
-    IsolateConfiguration<Q, R> configuration,
-  ) = FutureBackpressureConfiguration._;
-
-  factory BackpressureConfiguration.stream(
-    StreamController<R> streamController,
-    IsolateConfiguration<Q, R> configuration,
-  ) = StreamBackpressureConfiguration._;
 }
 
 @internal
@@ -38,7 +28,7 @@ class FutureBackpressureConfiguration<Q, R>
 
   final Completer<R> completer;
 
-  const FutureBackpressureConfiguration._(this.completer, super.configuration);
+  const FutureBackpressureConfiguration(this.completer, super.configuration);
 
   @override
   void closeError(Object error, [StackTrace? stackTrace]) {
@@ -49,7 +39,7 @@ class FutureBackpressureConfiguration<Q, R>
   BackpressureConfiguration<Q, R> copyWith(
     IsolateConfiguration<Q, R> isolateConfiguration,
   ) {
-    return FutureBackpressureConfiguration._(completer, isolateConfiguration);
+    return FutureBackpressureConfiguration(completer, isolateConfiguration);
   }
 }
 
@@ -60,7 +50,7 @@ class StreamBackpressureConfiguration<Q, R>
 
   final StreamController<R> streamController;
 
-  const StreamBackpressureConfiguration._(
+  const StreamBackpressureConfiguration(
     this.streamController,
     super.configuration,
   );
@@ -75,7 +65,7 @@ class StreamBackpressureConfiguration<Q, R>
   BackpressureConfiguration<Q, R> copyWith(
     IsolateConfiguration<Q, R> isolateConfiguration,
   ) {
-    return StreamBackpressureConfiguration._(
+    return StreamBackpressureConfiguration(
       streamController,
       isolateConfiguration,
     );

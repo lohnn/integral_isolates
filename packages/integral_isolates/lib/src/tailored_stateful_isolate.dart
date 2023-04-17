@@ -115,7 +115,7 @@ class TailoredStatefulIsolate<Q, R>
     final Flow flow = Flow.begin();
 
     final completer = Completer<R>();
-    final isolateConfiguration = IsolateConfiguration<Q, R>(
+    final isolateConfiguration = FutureIsolateConfiguration<Q, R>(
       callback,
       message,
       debugLabel,
@@ -123,7 +123,7 @@ class TailoredStatefulIsolate<Q, R>
     );
 
     backpressureStrategy.add(
-      BackpressureConfiguration.future(
+      FutureBackpressureConfiguration(
         completer,
         isolateConfiguration,
       ),
