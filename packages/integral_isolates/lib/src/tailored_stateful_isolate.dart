@@ -115,7 +115,7 @@ class TailoredStatefulIsolate<Q, R>
     final Flow flow = Flow.begin();
 
     final completer = Completer<R>();
-    final isolateConfiguration = FutureIsolateConfiguration<Q, R>(
+    final isolateConfiguration = FutureIsolateConfiguration(
       callback,
       message,
       debugLabel,
@@ -130,5 +130,35 @@ class TailoredStatefulIsolate<Q, R>
     );
     handleIsolateCall();
     return completer.future;
+  }
+
+  @override
+  Stream<R> isolateStream(
+    IsolateStream<Q, R> callback,
+    Q message, {
+    String? debugLabel,
+  }) {
+    debugLabel ??= 'compute';
+
+    final Flow flow = Flow.begin();
+
+    // TODO(lohnn): Implement onListen?
+    // TODO(lohnn): Implement onPause?
+    // TODO(lohnn): Implement onResume?
+    final streamController = StreamController<R>();
+
+    final isolateConfiguration = StreamIsolateConfiguration(
+      callback,
+      message,
+      debugLabel,
+      flow.id,
+    );
+
+    backpressureStrategy.add(
+      StreamBackpressureConfiguration(streamController, isolateConfiguration),
+    );
+
+    handleIsolateCall();
+    return streamController.stream;
   }
 }
