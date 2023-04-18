@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:integral_isolates/integral_isolates.dart';
 import 'package:integral_isolates/src/integral_isolate_base.dart';
 import 'package:integral_isolates/src/isolate_configuration.dart';
+import 'package:meta/meta.dart';
 
 /// Data type of the implementation of the computation function.
 ///
@@ -30,6 +31,13 @@ abstract class TailoredIsolateGetter<Q, R> {
   /// compute function, but for a long lived isolate.
   Future<R> isolate(
     IsolateCallback<Q, R> callback,
+    Q message, {
+    String? debugLabel,
+  });
+
+  @experimental
+  Stream<R> isolateStream(
+    IsolateStream<Q, R> callback,
     Q message, {
     String? debugLabel,
   });
@@ -132,6 +140,7 @@ class TailoredStatefulIsolate<Q, R>
     return completer.future;
   }
 
+  @experimental
   @override
   Stream<R> isolateStream(
     IsolateStream<Q, R> callback,
