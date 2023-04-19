@@ -1,8 +1,5 @@
-import 'dart:async';
-
 import 'package:integral_isolates/src/backpressure/backpressure_strategy.dart';
 import 'package:integral_isolates/src/backpressure/mixins/one_sized_queue.dart';
-import 'package:integral_isolates/src/isolate_configuration.dart';
 
 /// An implementation of [BackpressureStrategy] that allows for manual merge of
 /// input data for calls to the isolate function.

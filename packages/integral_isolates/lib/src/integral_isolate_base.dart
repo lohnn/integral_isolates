@@ -5,6 +5,7 @@ import 'dart:isolate';
 
 import 'package:async/async.dart';
 import 'package:integral_isolates/integral_isolates.dart';
+import 'package:integral_isolates/src/backpressure/backpressure_strategy.dart';
 import 'package:integral_isolates/src/isolate_configuration.dart';
 import 'package:meta/meta.dart';
 
