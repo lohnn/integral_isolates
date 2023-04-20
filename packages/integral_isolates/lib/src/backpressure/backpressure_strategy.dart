@@ -4,18 +4,30 @@ import 'package:integral_isolates/integral_isolates.dart';
 import 'package:integral_isolates/src/isolate_configuration.dart';
 import 'package:meta/meta.dart';
 
-/// A job queue item.
+/// Base class for a job queue item.
 ///
 /// Used internally to keep track of jobs waiting for execution.
+///
+/// Implementors:
+/// * [FutureBackpressureConfiguration] that is used for the isolate calls that
+/// returns a future.
+/// * [StreamBackpressureConfiguration] that is used for the isolate calls that
+/// returns a stream.
+@internal
 abstract class BackpressureConfiguration<Q, R> {
-  // TODO(lohnn): Implement equals and hashCode
-
+  @internal
   const BackpressureConfiguration(this.configuration);
 
+  @internal
   final IsolateConfiguration<Q, R> configuration;
 
+  /// Completes and closes the Stream or Future with an error and an optional
+  /// stack trace.
+  @internal
   void closeError(Object error, [StackTrace? stackTrace]);
 
+  /// Copies the backpressure configuration with a new [configuration], keeping
+  /// the old completer/streamController.
   BackpressureConfiguration<Q, R> copyWith(
     IsolateConfiguration<Q, R> isolateConfiguration,
   );
@@ -24,10 +36,10 @@ abstract class BackpressureConfiguration<Q, R> {
 @internal
 class FutureBackpressureConfiguration<Q, R>
     extends BackpressureConfiguration<Q, R> {
-  // TODO(lohnn): Implement equals and hashCode
-
+  @internal
   final Completer<R> completer;
 
+  @internal
   const FutureBackpressureConfiguration(this.completer, super.configuration);
 
   @override
@@ -46,10 +58,10 @@ class FutureBackpressureConfiguration<Q, R>
 @internal
 class StreamBackpressureConfiguration<Q, R>
     extends BackpressureConfiguration<Q, R> {
-  // TODO(lohnn): Implement equals and hashCode
-
+  @internal
   final StreamController<R> streamController;
 
+  @internal
   const StreamBackpressureConfiguration(
     this.streamController,
     super.configuration,
@@ -71,9 +83,6 @@ class StreamBackpressureConfiguration<Q, R>
     );
   }
 }
-
-// typedef BackpressureConfiguration<Q, R>
-//     = MapEntry<Completer<R>, IsolateConfiguration<Q, R>>;
 
 /// Class to implement to support a backpressure strategy. This is used to make
 /// sure job queues are handled properly.
