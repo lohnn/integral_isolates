@@ -36,6 +36,13 @@ abstract class TailoredIsolateGetter<Q, R> {
     String? debugLabel,
   });
 
+  /// The computation function, a function used the same way as Flutter's
+  /// compute function, but for a long lived isolate.
+  ///
+  /// Very similar to the [isolate] function, but instead of returning a
+  /// [Future], a [Stream] is returned to allow for a response in multiple
+  /// parts. Every stream event will be sent individually through from the
+  /// isolate.
   @experimental
   Stream<R> isolateStream(
     IsolateStream<Q, R> callback,

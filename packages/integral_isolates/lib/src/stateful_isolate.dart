@@ -17,6 +17,10 @@ typedef IsolateComputeImpl = Future<R> Function<Q, R>(
   String? debugLabel,
 });
 
+/// Data type of the implementation of the stream function.
+///
+/// Can be used as data type for the stream function, for example when returning
+/// the [StatefulIsolate.isolateStream] as a return type of a function.
 typedef IsolateStreamComputeImpl = Future<R> Function<Q, R>(
   IsolateStream<Q, R> callback,
   Q message, {
@@ -36,6 +40,13 @@ abstract class IsolateGetter {
     String? debugLabel,
   });
 
+  /// The computation function, a function used the same way as Flutter's
+  /// compute function, but for a long lived isolate.
+  ///
+  /// Very similar to the [isolate] function, but instead of returning a
+  /// [Future], a [Stream] is returned to allow for a response in multiple
+  /// parts. Every stream event will be sent individually through from the
+  /// isolate.
   @experimental
   Stream<R> isolateStream<Q, R>(
     IsolateStream<Q, R> callback,

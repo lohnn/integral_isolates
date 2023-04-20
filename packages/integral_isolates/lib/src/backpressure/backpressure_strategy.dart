@@ -15,10 +15,13 @@ import 'package:meta/meta.dart';
 /// returns a stream.
 @internal
 abstract class BackpressureConfiguration<Q, R> {
+  /// Constructor for allowing overloading of this class, not to be used
+  /// externally.
   @internal
   const BackpressureConfiguration(this.configuration);
 
-  @internal
+  /// The [IsolateConfiguration] containing the configuration to be used to
+  /// send to the isolate.
   final IsolateConfiguration<Q, R> configuration;
 
   /// Completes and closes the Stream or Future with an error and an optional
@@ -33,12 +36,16 @@ abstract class BackpressureConfiguration<Q, R> {
   );
 }
 
+/// Job queue item for use with the [StatefulIsolate.isolate] and
+/// [TailoredStatefulIsolate.isolate] functions.
 @internal
 class FutureBackpressureConfiguration<Q, R>
     extends BackpressureConfiguration<Q, R> {
+  /// Internal handle for completing the job.
   @internal
   final Completer<R> completer;
 
+  /// Creates a job queue item for a [Future] response.
   @internal
   const FutureBackpressureConfiguration(this.completer, super.configuration);
 
@@ -55,12 +62,16 @@ class FutureBackpressureConfiguration<Q, R>
   }
 }
 
+/// Job queue item for use with the [StatefulIsolate.isolateStream] and
+/// [TailoredStatefulIsolate.isolateStream] functions.
 @internal
 class StreamBackpressureConfiguration<Q, R>
     extends BackpressureConfiguration<Q, R> {
+  /// Internal handle for sending stream events to the listener.
   @internal
   final StreamController<R> streamController;
 
+  /// Creates a job queue item for a [Stream] response.
   @internal
   const StreamBackpressureConfiguration(
     this.streamController,

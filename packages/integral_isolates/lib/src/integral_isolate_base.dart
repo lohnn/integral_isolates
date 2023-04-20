@@ -89,7 +89,7 @@ mixin IsolateBase<Q, R> {
         } else if (configuration is FutureBackpressureConfiguration<Q, R>) {
           final response = await _isolateToMainPort.next;
           if (response is _SuccessIsolateResponse) {
-            // TODO(lohnn): See if we could move this into the Configuration class
+            // TODO(lohnn): See if we could move this into the Configuration
             configuration.completer.complete(response.response as R);
           } else if (response is _ErrorIsolateResponse) {
             configuration.closeError(response.error, response.stackTrace);
