@@ -2,8 +2,10 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:integral_isolates/integral_isolates.dart';
+import 'package:integral_isolates/src/backpressure/backpressure_strategy.dart';
 import 'package:integral_isolates/src/integral_isolate_base.dart';
 import 'package:integral_isolates/src/isolate_configuration.dart';
+import 'package:meta/meta.dart';
 
 /// Data type of the implementation of the computation function.
 ///
@@ -30,6 +32,20 @@ abstract class TailoredIsolateGetter<Q, R> {
   /// compute function, but for a long lived isolate.
   Future<R> isolate(
     IsolateCallback<Q, R> callback,
+    Q message, {
+    String? debugLabel,
+  });
+
+  /// The computation function, a function used the same way as Flutter's
+  /// compute function, but for a long lived isolate.
+  ///
+  /// Very similar to the [isolate] function, but instead of returning a
+  /// [Future], a [Stream] is returned to allow for a response in multiple
+  /// parts. Every stream event will be sent individually through from the
+  /// isolate.
+  @experimental
+  Stream<R> isolateStream(
+    IsolateStream<Q, R> callback,
     Q message, {
     String? debugLabel,
   });
@@ -115,15 +131,51 @@ class TailoredStatefulIsolate<Q, R>
     final Flow flow = Flow.begin();
 
     final completer = Completer<R>();
-    final isolateConfiguration = IsolateConfiguration<Q, R>(
+    final isolateConfiguration = FutureIsolateConfiguration(
       callback,
       message,
       debugLabel,
       flow.id,
     );
 
-    backpressureStrategy.add(completer, isolateConfiguration);
+    backpressureStrategy.add(
+      FutureBackpressureConfiguration(
+        completer,
+        isolateConfiguration,
+      ),
+    );
     handleIsolateCall();
     return completer.future;
+  }
+
+  @experimental
+  @override
+  Stream<R> isolateStream(
+    IsolateStream<Q, R> callback,
+    Q message, {
+    String? debugLabel,
+  }) {
+    debugLabel ??= 'compute';
+
+    final Flow flow = Flow.begin();
+
+    // TODO(lohnn): Implement onListen?
+    // TODO(lohnn): Implement onPause?
+    // TODO(lohnn): Implement onResume?
+    final streamController = StreamController<R>();
+
+    final isolateConfiguration = StreamIsolateConfiguration(
+      callback,
+      message,
+      debugLabel,
+      flow.id,
+    );
+
+    backpressureStrategy.add(
+      StreamBackpressureConfiguration(streamController, isolateConfiguration),
+    );
+
+    handleIsolateCall();
+    return streamController.stream;
   }
 }

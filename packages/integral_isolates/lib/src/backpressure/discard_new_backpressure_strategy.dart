@@ -1,8 +1,5 @@
-import 'dart:async';
-
 import 'package:integral_isolates/src/backpressure/backpressure_strategy.dart';
 import 'package:integral_isolates/src/backpressure/mixins/one_sized_queue.dart';
-import 'package:integral_isolates/src/isolate_configuration.dart';
 
 /// An implementation of [BackpressureStrategy] that has a job queue with size
 /// one, and as long as the queue is populated all new jobs will be dropped.
@@ -15,15 +12,7 @@ import 'package:integral_isolates/src/isolate_configuration.dart';
 class DiscardNewBackPressureStrategy<Q, R> extends BackpressureStrategy<Q, R>
     with OneSizedQueue<Q, R> {
   @override
-  void add(
-    Completer<R> completer,
-    IsolateConfiguration<Q, R> isolateConfiguration,
-  ) {
-    final configuration = BackpressureConfiguration(
-      completer,
-      isolateConfiguration,
-    );
-
+  void add(BackpressureConfiguration<Q, R> configuration) {
     if (hasNext()) {
       drop(configuration);
     } else {

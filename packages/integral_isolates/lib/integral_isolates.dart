@@ -1,4 +1,8 @@
-export 'package:integral_isolates/src/backpressure/backpressure_strategy.dart';
+export 'package:integral_isolates/src/backpressure/backpressure_strategy.dart'
+    hide
+        BackpressureConfiguration,
+        FutureBackpressureConfiguration,
+        StreamBackpressureConfiguration;
 export 'package:integral_isolates/src/backpressure/combine_backpressure_strategy.dart';
 export 'package:integral_isolates/src/backpressure/discard_new_backpressure_strategy.dart';
 export 'package:integral_isolates/src/backpressure/no_backpressure_strategy.dart';

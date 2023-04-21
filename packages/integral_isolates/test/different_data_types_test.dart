@@ -26,7 +26,7 @@ void main() {
         equals(3),
       );
 
-      await expectLater(
+      expectLater(
         isolate(
           print,
           ReceivePort(),
@@ -47,7 +47,7 @@ void main() {
         equals(9),
       );
 
-      await expectLater(
+      expectLater(
         isolate(
           (_) {
             return ReceivePort();

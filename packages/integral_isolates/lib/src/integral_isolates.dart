@@ -21,3 +21,9 @@ class Isolated extends StatefulIsolate {
 /// [foundation.ComputeCallback](https://api.flutter.dev/flutter/foundation/ComputeCallback.html)
 /// from the official Flutter documentation.
 typedef IsolateCallback<Q, R> = FutureOr<R> Function(Q message);
+
+/// Signature for the callback passed to [StatefulIsolate.isolateStream].
+///
+/// Instances of [IsolateStream] must be functions that can be sent to an
+/// isolate.
+typedef IsolateStream<Q, R> = Stream<R> Function(Q message);
