@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2023-04-21
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
+ - [`integral_isolates` - `v0.4.1`](#integral_isolates---v041)
+ - [`use_isolate` - `v0.2.0+1`](#use_isolate---v0201)
+
+---
+
+#### `integral_isolates` - `v0.4.1`
+
+ - **FEAT**: isolate stream (#18).
+
+#### `use_isolate` - `v0.2.0+1`
+
+ - **DOCS**: Set specific versions and name for example (#17).
+
+
 ## 2023-04-16
 
 ### Changes

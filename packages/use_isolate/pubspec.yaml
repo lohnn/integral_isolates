@@ -1,6 +1,6 @@
 name: use_isolate
 description: A Hook wrapper of integral_isolates making multi-threading easy using hooks
-version: 0.2.0
+version: 0.2.0+1
 homepage: https://github.com/lohnn/integral_isolates
 
 environment:
@@ -11,6 +11,6 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_hooks: ^0.18.6
-  integral_isolates: ^0.4.0
+  integral_isolates: ^0.4.1
 dev_dependencies:
   lint: ^2.0.1

@@ -1,3 +1,7 @@
+## 0.2.0+1
+
+ - **DOCS**: Set specific versions and name for example (#17).
+
 ## 0.2.0
 
 > Note: This release has breaking changes.

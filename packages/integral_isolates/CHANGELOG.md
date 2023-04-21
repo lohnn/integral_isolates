@@ -1,3 +1,7 @@
+## 0.4.1
+
+ - **FEAT**: isolate stream (#18).
+
 ## 0.4.0
 
 > Note: This release has breaking changes.
