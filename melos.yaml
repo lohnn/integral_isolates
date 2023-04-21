@@ -33,7 +33,9 @@ scripts:
   test:
     run: melos run test:select --no-select
     description: Run all Flutter tests in this project.
-
+    packageFilters:
+      dependsOn: test
+  
   upgrade:
     run: melos exec -- flutter pub upgrade
     description: Upgrade to the latest supported versions of all packages.
