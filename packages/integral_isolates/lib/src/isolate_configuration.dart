@@ -11,9 +11,9 @@ import 'package:meta/meta.dart';
 abstract class IsolateConfiguration<Q, R> {
   const IsolateConfiguration(
     this.message,
-    this.debugLabel,
+    String? debugLabel,
     this.flowId,
-  );
+  ) : debugLabel = debugLabel ?? 'compute';
 
   final Q message;
   final String debugLabel;

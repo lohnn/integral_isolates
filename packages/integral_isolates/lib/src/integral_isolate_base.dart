@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs
 
 import 'dart:async';
+import 'dart:developer';
 import 'dart:isolate';
 
 import 'package:async/async.dart';
@@ -43,6 +44,18 @@ mixin IsolateBase<Q, R> {
 
     handleIsolateCall();
     _initCompleter!.complete();
+  }
+
+  /// Internal helper function to wrap creation of an isolate call, add it to
+  /// queue and start running the queue.
+  @internal
+  void addIsolateCall(
+    BackpressureConfiguration<Q, R> Function(Flow flow)
+        createBackpressureConfiguration,
+  ) {
+    final Flow flow = Flow.begin();
+    backpressureStrategy.add(createBackpressureConfiguration(flow));
+    handleIsolateCall();
   }
 
   /// If the worker is currently running, this bool will be set to true
