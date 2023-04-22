@@ -2,7 +2,9 @@
 
 import 'dart:async';
 import 'dart:developer';
+import 'dart:isolate';
 
+import 'package:integral_isolates/src/integral_isolate_base.dart';
 import 'package:integral_isolates/src/integral_isolates.dart';
 import 'package:meta/meta.dart';
 
@@ -29,6 +31,8 @@ abstract class IsolateConfiguration<Q, R> {
         'flowId: $flowId'
         ')';
   }
+
+  Future<void> handleCall(SendPort isolateToMainPort);
 }
 
 class FutureIsolateConfiguration<Q, R> extends IsolateConfiguration<Q, R> {
@@ -58,6 +62,13 @@ class FutureIsolateConfiguration<Q, R> extends IsolateConfiguration<Q, R> {
       flowId,
     );
   }
+
+  @override
+  Future<void> handleCall(SendPort isolateToMainPort) async {
+    isolateToMainPort.send(
+      SuccessIsolateResponse(flowId, await applyAndTime()),
+    );
+  }
 }
 
 class StreamIsolateConfiguration<Q, R> extends IsolateConfiguration<Q, R> {
@@ -70,7 +81,7 @@ class StreamIsolateConfiguration<Q, R> extends IsolateConfiguration<Q, R> {
 
   final IsolateStream<Q, R> _stream;
 
-  Stream<R> applyAndTime() {
+  Stream<FutureOr<R>> applyAndTime() {
     return Timeline.timeSync(
       debugLabel,
       () => _stream(message),
@@ -85,6 +96,21 @@ class StreamIsolateConfiguration<Q, R> extends IsolateConfiguration<Q, R> {
       message,
       debugLabel,
       flowId,
+    );
+  }
+
+  @override
+  Future<void> handleCall(SendPort isolateToMainPort) async {
+    await for (final event in applyAndTime()) {
+      isolateToMainPort.send(
+        PartialSuccessIsolateResponse(
+          flowId,
+          await event,
+        ),
+      );
+    }
+    isolateToMainPort.send(
+      StreamClosedIsolateResponse(flowId),
     );
   }
 }

@@ -125,26 +125,7 @@ Future _isolate(SendPort isolateToMainPort) async {
     try {
       if (data is IsolateConfiguration) {
         try {
-          if (data is FutureIsolateConfiguration) {
-            isolateToMainPort.send(
-              SuccessIsolateResponse(
-                data.flowId,
-                await data.applyAndTime(),
-              ),
-            );
-          } else if (data is StreamIsolateConfiguration) {
-            await for (final event in data.applyAndTime()) {
-              isolateToMainPort.send(
-                PartialSuccessIsolateResponse._(
-                  data.flowId,
-                  await event,
-                ),
-              );
-            }
-            isolateToMainPort.send(
-              StreamClosedIsolateResponse._(data.flowId),
-            );
-          }
+          await data.handleCall(isolateToMainPort);
         } catch (error, stackTrace) {
           isolateToMainPort.send(
             IsolateResponse.error(data.flowId, error, stackTrace),
@@ -190,12 +171,14 @@ class SuccessIsolateResponse<R> extends IsolateResponse<R> {
 
 @internal
 class PartialSuccessIsolateResponse<R> extends SuccessIsolateResponse<R> {
-  const PartialSuccessIsolateResponse._(super.flowId, super.response);
+  @internal
+  const PartialSuccessIsolateResponse(super.flowId, super.response);
 }
 
 @internal
 class StreamClosedIsolateResponse<R> extends IsolateResponse<R> {
-  const StreamClosedIsolateResponse._(super.flowId);
+  @internal
+  const StreamClosedIsolateResponse(super.flowId);
 }
 
 @internal
