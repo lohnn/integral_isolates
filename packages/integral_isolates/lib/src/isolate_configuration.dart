@@ -32,6 +32,9 @@ abstract class IsolateConfiguration<Q, R> {
         ')';
   }
 
+  /// Internal function that is called to let the [IsolateConfiguration]
+  /// implementation handle the isolate call.
+  @internal
   Future<void> handleCall(SendPort isolateToMainPort);
 }
 
