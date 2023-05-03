@@ -121,14 +121,14 @@ Future _isolate(SendPort isolateToMainPort) async {
     closePort.close();
   });
 
-  await for (final data in mainToIsolateStream) {
+  await for (final configuration in mainToIsolateStream) {
     try {
-      if (data is IsolateConfiguration) {
+      if (configuration is IsolateConfiguration) {
         try {
-          await data.handleCall(isolateToMainPort);
+          await configuration.handleCall(isolateToMainPort);
         } catch (error, stackTrace) {
           isolateToMainPort.send(
-            IsolateResponse.error(data.flowId, error, stackTrace),
+            IsolateResponse.error(configuration.flowId, error, stackTrace),
           );
         }
       } else {
