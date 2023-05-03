@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs
 
 import 'dart:async';
+import 'dart:developer';
 import 'dart:isolate';
 
 import 'package:async/async.dart';
@@ -45,6 +46,18 @@ mixin IsolateBase<Q, R> {
     _initCompleter!.complete();
   }
 
+  /// Internal helper function to wrap creation of an isolate call, add it to
+  /// queue and start running the queue.
+  @internal
+  void addIsolateCall(
+    BackpressureConfiguration<Q, R> Function(Flow flow)
+        createBackpressureConfiguration,
+  ) {
+    final Flow flow = Flow.begin();
+    backpressureStrategy.add(createBackpressureConfiguration(flow));
+    handleIsolateCall();
+  }
+
   /// If the worker is currently running, this bool will be set to true
   bool _isRunning = false;
   bool _disposed = false;
@@ -68,39 +81,7 @@ mixin IsolateBase<Q, R> {
 
         _mainToIsolatePort.send(configuration.configuration);
 
-        if (configuration is StreamBackpressureConfiguration<Q, R>) {
-          dynamic response;
-          while (true) {
-            response = await _isolateToMainPort.next;
-            if (response is! _PartialSuccessIsolateResponse) break;
-            configuration.streamController.add(response.response as R);
-          }
-          if (response is _StreamClosedIsolateResponse) {
-            configuration.streamController.close();
-          } else if (response is _ErrorIsolateResponse) {
-            configuration.closeError(response.error, response.stackTrace);
-          } else {
-            assert(
-              false,
-              'This should not have been possible, please open an issue to the '
-              'developer.',
-            );
-          }
-        } else if (configuration is FutureBackpressureConfiguration<Q, R>) {
-          final response = await _isolateToMainPort.next;
-          if (response is _SuccessIsolateResponse) {
-            // TODO(lohnn): See if we could move this into the Configuration
-            configuration.completer.complete(response.response as R);
-          } else if (response is _ErrorIsolateResponse) {
-            configuration.closeError(response.error, response.stackTrace);
-          } else {
-            assert(
-              false,
-              'This should not have been possible, please open an issue to the '
-              'developer.',
-            );
-          }
-        }
+        await configuration.handleResponse(_isolateToMainPort);
       } catch (e, stackTrace) {
         configuration.closeError(e, stackTrace);
       }
@@ -140,33 +121,14 @@ Future _isolate(SendPort isolateToMainPort) async {
     closePort.close();
   });
 
-  await for (final data in mainToIsolateStream) {
+  await for (final configuration in mainToIsolateStream) {
     try {
-      if (data is IsolateConfiguration) {
+      if (configuration is IsolateConfiguration) {
         try {
-          if (data is FutureIsolateConfiguration) {
-            isolateToMainPort.send(
-              _SuccessIsolateResponse(
-                data.flowId,
-                await data.applyAndTime(),
-              ),
-            );
-          } else if (data is StreamIsolateConfiguration) {
-            await for (final event in data.applyAndTime()) {
-              isolateToMainPort.send(
-                _PartialSuccessIsolateResponse(
-                  data.flowId,
-                  await event,
-                ),
-              );
-            }
-            isolateToMainPort.send(
-              _StreamClosedIsolateResponse(data.flowId),
-            );
-          }
+          await configuration.handleCall(isolateToMainPort);
         } catch (error, stackTrace) {
           isolateToMainPort.send(
-            _IsolateResponse.error(data.flowId, error, stackTrace),
+            IsolateResponse.error(configuration.flowId, error, stackTrace),
           );
         }
       } else {
@@ -186,35 +148,43 @@ class _IsolateSetupResponse {
   final SendPort closePort;
 }
 
-abstract class _IsolateResponse<R> {
+@internal
+abstract class IsolateResponse<R> {
   final int flowId;
 
-  const _IsolateResponse(this.flowId);
+  const IsolateResponse(this.flowId);
 
-  const factory _IsolateResponse.error(
+  const factory IsolateResponse.error(
     int flowId,
     Object error,
     StackTrace stackTrace,
-  ) = _ErrorIsolateResponse;
+  ) = ErrorIsolateResponse._;
 }
 
-class _SuccessIsolateResponse<R> extends _IsolateResponse<R> {
+@internal
+class SuccessIsolateResponse<R> extends IsolateResponse<R> {
   final R response;
 
-  const _SuccessIsolateResponse(super.flowId, this.response);
+  @internal
+  const SuccessIsolateResponse(super.flowId, this.response);
 }
 
-class _PartialSuccessIsolateResponse<R> extends _SuccessIsolateResponse<R> {
-  const _PartialSuccessIsolateResponse(super.flowId, super.response);
+@internal
+class PartialSuccessIsolateResponse<R> extends SuccessIsolateResponse<R> {
+  @internal
+  const PartialSuccessIsolateResponse(super.flowId, super.response);
 }
 
-class _StreamClosedIsolateResponse<R> extends _IsolateResponse<R> {
-  const _StreamClosedIsolateResponse(super.flowId);
+@internal
+class StreamClosedIsolateResponse<R> extends IsolateResponse<R> {
+  @internal
+  const StreamClosedIsolateResponse(super.flowId);
 }
 
-class _ErrorIsolateResponse<R> extends _IsolateResponse<R> {
+@internal
+class ErrorIsolateResponse<R> extends IsolateResponse<R> {
   final Object error;
   final StackTrace stackTrace;
 
-  const _ErrorIsolateResponse(super.flowId, this.error, this.stackTrace);
+  const ErrorIsolateResponse._(super.flowId, this.error, this.stackTrace);
 }

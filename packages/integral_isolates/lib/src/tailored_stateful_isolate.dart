@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:integral_isolates/integral_isolates.dart';
 import 'package:integral_isolates/src/backpressure/backpressure_strategy.dart';
@@ -126,25 +125,21 @@ class TailoredStatefulIsolate<Q, R>
     Q message, {
     String? debugLabel,
   }) {
-    debugLabel ??= 'compute';
-
-    final Flow flow = Flow.begin();
-
     final completer = Completer<R>();
-    final isolateConfiguration = FutureIsolateConfiguration(
-      callback,
-      message,
-      debugLabel,
-      flow.id,
-    );
 
-    backpressureStrategy.add(
-      FutureBackpressureConfiguration(
+    addIsolateCall((flow) {
+      final isolateConfiguration = FutureIsolateConfiguration(
+        callback,
+        message,
+        debugLabel,
+        flow.id,
+      );
+      return FutureBackpressureConfiguration(
         completer,
         isolateConfiguration,
-      ),
-    );
-    handleIsolateCall();
+      );
+    });
+
     return completer.future;
   }
 
@@ -155,27 +150,24 @@ class TailoredStatefulIsolate<Q, R>
     Q message, {
     String? debugLabel,
   }) {
-    debugLabel ??= 'compute';
-
-    final Flow flow = Flow.begin();
-
     // TODO(lohnn): Implement onListen?
     // TODO(lohnn): Implement onPause?
     // TODO(lohnn): Implement onResume?
     final streamController = StreamController<R>();
 
-    final isolateConfiguration = StreamIsolateConfiguration(
-      callback,
-      message,
-      debugLabel,
-      flow.id,
-    );
+    addIsolateCall((flow) {
+      final isolateConfiguration = StreamIsolateConfiguration(
+        callback,
+        message,
+        debugLabel,
+        flow.id,
+      );
+      return StreamBackpressureConfiguration(
+        streamController,
+        isolateConfiguration,
+      );
+    });
 
-    backpressureStrategy.add(
-      StreamBackpressureConfiguration(streamController, isolateConfiguration),
-    );
-
-    handleIsolateCall();
     return streamController.stream;
   }
 }
