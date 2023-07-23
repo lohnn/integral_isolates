@@ -26,7 +26,7 @@ typedef TailoredIsolateComputeImpl<Q, R> = Future<R> Function(
 ///
 /// Useful for when wrapping the functionality and just want to expose the
 /// computation function.
-abstract class TailoredIsolateGetter<Q, R> {
+sealed class TailoredIsolateGetter<Q, R> {
   /// The computation function, a function used the same way as Flutter's
   /// compute function, but for a long lived isolate.
   Future<R> isolate(
@@ -97,7 +97,7 @@ abstract class TailoredIsolateGetter<Q, R> {
 ///  * [StatefulIsolate], to create a long lived isolate that has no predefined
 ///  input and output typed, but rather decides type per call to the [isolate]
 ///  function.
-class TailoredStatefulIsolate<Q, R>
+final class TailoredStatefulIsolate<Q, R>
     with IsolateBase<Q, R>
     implements TailoredIsolateGetter<Q, R> {
   @override

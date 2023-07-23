@@ -10,7 +10,7 @@ import 'package:meta/meta.dart';
 
 @internal
 @immutable
-abstract class IsolateConfiguration<Q, R> {
+sealed class IsolateConfiguration<Q, R> {
   const IsolateConfiguration(
     this.message,
     String? debugLabel,
@@ -38,7 +38,7 @@ abstract class IsolateConfiguration<Q, R> {
   Future<void> handleCall(SendPort isolateToMainPort);
 }
 
-class FutureIsolateConfiguration<Q, R> extends IsolateConfiguration<Q, R> {
+final class FutureIsolateConfiguration<Q, R> extends IsolateConfiguration<Q, R> {
   const FutureIsolateConfiguration(
     this.callback,
     super.message,
@@ -74,7 +74,7 @@ class FutureIsolateConfiguration<Q, R> extends IsolateConfiguration<Q, R> {
   }
 }
 
-class StreamIsolateConfiguration<Q, R> extends IsolateConfiguration<Q, R> {
+final class StreamIsolateConfiguration<Q, R> extends IsolateConfiguration<Q, R> {
   const StreamIsolateConfiguration(
     this._stream,
     super.message,

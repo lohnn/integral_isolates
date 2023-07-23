@@ -4,6 +4,7 @@ import 'package:async/async.dart';
 import 'package:integral_isolates/integral_isolates.dart';
 import 'package:integral_isolates/src/integral_isolate_base.dart';
 import 'package:integral_isolates/src/isolate_configuration.dart';
+import 'package:integral_isolates/src/strings.dart';
 import 'package:meta/meta.dart';
 
 /// Base class for a job queue item.
@@ -70,18 +71,17 @@ class FutureBackpressureConfiguration<Q, R>
 
   @override
   Future<void> handleResponse(StreamQueue<dynamic> isolateToMainPort) async {
-    final response = await isolateToMainPort.next;
-    if (response is SuccessIsolateResponse) {
-      // TODO(lohnn): See if we could move this into the Configuration
-      completer.complete(response.response as R);
-    } else if (response is ErrorIsolateResponse) {
-      closeError(response.error, response.stackTrace);
-    } else {
-      assert(
-        false,
-        'This should not have been possible, please open an issue to the '
-        'developer.',
-      );
+    switch (await isolateToMainPort.next) {
+      case SuccessIsolateResponse<R>(response: final response):
+        completer.complete(response);
+      case ErrorIsolateResponse(
+          error: final error,
+          stackTrace: final stackTrace,
+        ):
+        closeError(error, stackTrace);
+      default:
+        closeError(UnexpectedDropException());
+        assert(false, fileBugMessage);
     }
   }
 }
@@ -120,22 +120,23 @@ class StreamBackpressureConfiguration<Q, R>
 
   @override
   Future<void> handleResponse(StreamQueue<dynamic> isolateToMainPort) async {
-    dynamic response;
     while (true) {
-      response = await isolateToMainPort.next;
-      if (response is! PartialSuccessIsolateResponse) break;
-      streamController.add(response.response as R);
-    }
-    if (response is StreamClosedIsolateResponse) {
-      streamController.close();
-    } else if (response is ErrorIsolateResponse) {
-      closeError(response.error, response.stackTrace);
-    } else {
-      assert(
-        false,
-        'This should not have been possible, please open an issue to the '
-        'developer.',
-      );
+      switch (await isolateToMainPort.next) {
+        case PartialSuccessIsolateResponse<R>(response: final response):
+          streamController.add(response);
+        case StreamClosedIsolateResponse():
+          streamController.close();
+          return;
+        case ErrorIsolateResponse(
+            error: final error,
+            stackTrace: final stackTrace,
+          ):
+          closeError(error, stackTrace);
+          return;
+        default:
+          closeError(UnexpectedDropException());
+          assert(false, fileBugMessage);
+      }
     }
   }
 }
