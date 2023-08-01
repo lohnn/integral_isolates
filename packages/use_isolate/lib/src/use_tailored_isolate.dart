@@ -77,6 +77,12 @@ class _IsolateHookState<Q, R>
   }
 
   @override
+  void dispose() {
+    _isolated.dispose();
+    super.dispose();
+  }
+
+  @override
   TailoredStatefulIsolate<Q, R> build(BuildContext context) {
     return _isolated;
   }

@@ -74,5 +74,11 @@ class _IsolateHookState extends HookState<IsolateComputeImpl, _IsolateHook> {
   }
 
   @override
+  void dispose() {
+    _isolated.dispose();
+    super.dispose();
+  }
+
+  @override
   IsolateComputeImpl build(BuildContext context) => _isolated.isolate;
 }
