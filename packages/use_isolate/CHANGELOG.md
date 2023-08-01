@@ -1,3 +1,7 @@
+## 0.2.0+2
+
+ - **FIX**: Disposal of Isolate for hooks implemented (#30).
+
 ## 0.2.0+1
 
  - **DOCS**: Set specific versions and name for example (#17).
