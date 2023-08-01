@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2023-08-01
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
+ - [`use_isolate` - `v0.2.0+2`](#use_isolate---v0202)
+
+---
+
+#### `use_isolate` - `v0.2.0+2`
+
+ - **FIX**: Disposal of Isolate for hooks implemented (#30).
+
+
 ## 2023-04-21
 
 ### Changes
