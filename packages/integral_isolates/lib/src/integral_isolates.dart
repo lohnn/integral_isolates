@@ -1,5 +1,3 @@
-library use_isolate;
-
 import 'dart:async';
 
 import 'package:integral_isolates/integral_isolates.dart';

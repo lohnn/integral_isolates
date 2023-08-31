@@ -38,7 +38,8 @@ sealed class IsolateConfiguration<Q, R> {
   Future<void> handleCall(SendPort isolateToMainPort);
 }
 
-final class FutureIsolateConfiguration<Q, R> extends IsolateConfiguration<Q, R> {
+final class FutureIsolateConfiguration<Q, R>
+    extends IsolateConfiguration<Q, R> {
   const FutureIsolateConfiguration(
     this.callback,
     super.message,
@@ -74,7 +75,8 @@ final class FutureIsolateConfiguration<Q, R> extends IsolateConfiguration<Q, R> 
   }
 }
 
-final class StreamIsolateConfiguration<Q, R> extends IsolateConfiguration<Q, R> {
+final class StreamIsolateConfiguration<Q, R>
+    extends IsolateConfiguration<Q, R> {
   const StreamIsolateConfiguration(
     this._stream,
     super.message,
