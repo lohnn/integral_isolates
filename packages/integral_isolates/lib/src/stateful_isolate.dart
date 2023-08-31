@@ -114,6 +114,7 @@ class StatefulIsolate with IsolateBase implements IsolateGetter {
   StatefulIsolate({
     BackpressureStrategy? backpressureStrategy,
     bool autoInit = true,
+    IsolatePool pool = IsolatePools.newIsolate,
   }) : backpressureStrategy = backpressureStrategy ?? NoBackPressureStrategy() {
     if (autoInit) init();
   }
