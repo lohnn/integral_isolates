@@ -75,7 +75,7 @@ mixin IsolateBase<Q, R> {
 
       try {
         if (_disposed) {
-          configuration.closeError(IsolateClosedDropException());
+          configuration.closeError(const IsolateClosedDropException());
           return;
         }
 
@@ -141,7 +141,7 @@ Future _isolate(SendPort isolateToMainPort) async {
 }
 
 @immutable
-class _IsolateSetupResponse {
+final class _IsolateSetupResponse {
   const _IsolateSetupResponse(this.mainToIsolatePort, this.closePort);
 
   final SendPort mainToIsolatePort;
@@ -149,7 +149,7 @@ class _IsolateSetupResponse {
 }
 
 @internal
-abstract class IsolateResponse<R> {
+sealed class IsolateResponse<R> {
   final int flowId;
 
   const IsolateResponse(this.flowId);
@@ -170,19 +170,19 @@ class SuccessIsolateResponse<R> extends IsolateResponse<R> {
 }
 
 @internal
-class PartialSuccessIsolateResponse<R> extends SuccessIsolateResponse<R> {
+final class PartialSuccessIsolateResponse<R> extends SuccessIsolateResponse<R> {
   @internal
   const PartialSuccessIsolateResponse(super.flowId, super.response);
 }
 
 @internal
-class StreamClosedIsolateResponse<R> extends IsolateResponse<R> {
+final class StreamClosedIsolateResponse<R> extends IsolateResponse<R> {
   @internal
   const StreamClosedIsolateResponse(super.flowId);
 }
 
 @internal
-class ErrorIsolateResponse<R> extends IsolateResponse<R> {
+final class ErrorIsolateResponse<R> extends IsolateResponse<R> {
   final Object error;
   final StackTrace stackTrace;
 

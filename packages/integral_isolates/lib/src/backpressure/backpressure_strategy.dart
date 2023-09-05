@@ -70,18 +70,16 @@ class FutureBackpressureConfiguration<Q, R>
 
   @override
   Future<void> handleResponse(StreamQueue<dynamic> isolateToMainPort) async {
-    final response = await isolateToMainPort.next;
-    if (response is SuccessIsolateResponse) {
-      // TODO(lohnn): See if we could move this into the Configuration
-      completer.complete(response.response as R);
-    } else if (response is ErrorIsolateResponse) {
-      closeError(response.error, response.stackTrace);
-    } else {
-      assert(
-        false,
-        'This should not have been possible, please open an issue to the '
-        'developer.',
-      );
+    switch (await isolateToMainPort.next) {
+      case SuccessIsolateResponse<R>(response: final response):
+        completer.complete(response);
+      case ErrorIsolateResponse(
+          error: final error,
+          stackTrace: final stackTrace,
+        ):
+        closeError(error, stackTrace);
+      default:
+        closeError(UnexpectedDropException());
     }
   }
 }
@@ -120,22 +118,22 @@ class StreamBackpressureConfiguration<Q, R>
 
   @override
   Future<void> handleResponse(StreamQueue<dynamic> isolateToMainPort) async {
-    dynamic response;
     while (true) {
-      response = await isolateToMainPort.next;
-      if (response is! PartialSuccessIsolateResponse) break;
-      streamController.add(response.response as R);
-    }
-    if (response is StreamClosedIsolateResponse) {
-      streamController.close();
-    } else if (response is ErrorIsolateResponse) {
-      closeError(response.error, response.stackTrace);
-    } else {
-      assert(
-        false,
-        'This should not have been possible, please open an issue to the '
-        'developer.',
-      );
+      switch (await isolateToMainPort.next) {
+        case PartialSuccessIsolateResponse<R>(response: final response):
+          streamController.add(response);
+        case StreamClosedIsolateResponse():
+          streamController.close();
+          return;
+        case ErrorIsolateResponse(
+            error: final error,
+            stackTrace: final stackTrace,
+          ):
+          closeError(error, stackTrace);
+          return;
+        default:
+          closeError(UnexpectedDropException());
+      }
     }
   }
 }
@@ -174,6 +172,6 @@ abstract class BackpressureStrategy<Q, R> {
 
   /// Drops the job item, completing it with an error.
   void drop(BackpressureConfiguration configuration) {
-    configuration.closeError(BackpressureDropException());
+    configuration.closeError(const BackpressureDropException());
   }
 }
