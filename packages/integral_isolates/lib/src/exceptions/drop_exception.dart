@@ -1,3 +1,5 @@
+import 'package:integral_isolates/src/strings.dart';
+
 /// Base exception that is thrown when job is dropped.
 abstract class DropException implements Exception {}
 
@@ -12,9 +14,6 @@ class IsolateClosedDropException extends DropException {}
 class UnexpectedDropException extends DropException {
   @override
   String toString() {
-    return 'Exception: This is an unexpected internal error that should not not'
-        ' have been possible. Please file an issue at '
-        'https://github.com/lohnn/integral_isolates/issues with a reproducible '
-        'example.';
+    return 'Exception: $fileBugMessage';
   }
 }

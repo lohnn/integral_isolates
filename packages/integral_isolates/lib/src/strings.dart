@@ -5,4 +5,5 @@ import 'package:meta/meta.dart';
 const fileBugMessage =
     'There seems to be an internal error with the integral_isolates'
     ' package, please file a bug at '
-    'https://github.com/lohnn/integral_isolates/issues';
+    'https://github.com/lohnn/integral_isolates/issues with a reproducible '
+    'example.';
