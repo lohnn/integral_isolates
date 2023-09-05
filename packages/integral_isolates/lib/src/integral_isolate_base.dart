@@ -75,7 +75,7 @@ mixin IsolateBase<Q, R> {
 
       try {
         if (_disposed) {
-          configuration.closeError(IsolateClosedDropException());
+          configuration.closeError(const IsolateClosedDropException());
           return;
         }
 

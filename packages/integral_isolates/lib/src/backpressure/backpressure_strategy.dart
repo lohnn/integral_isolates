@@ -4,7 +4,6 @@ import 'package:async/async.dart';
 import 'package:integral_isolates/integral_isolates.dart';
 import 'package:integral_isolates/src/integral_isolate_base.dart';
 import 'package:integral_isolates/src/isolate_configuration.dart';
-import 'package:integral_isolates/src/strings.dart';
 import 'package:meta/meta.dart';
 
 /// Base class for a job queue item.
@@ -81,7 +80,6 @@ class FutureBackpressureConfiguration<Q, R>
         closeError(error, stackTrace);
       default:
         closeError(UnexpectedDropException());
-        assert(false, fileBugMessage);
     }
   }
 }
@@ -135,7 +133,6 @@ class StreamBackpressureConfiguration<Q, R>
           return;
         default:
           closeError(UnexpectedDropException());
-          assert(false, fileBugMessage);
       }
     }
   }
@@ -175,6 +172,6 @@ abstract class BackpressureStrategy<Q, R> {
 
   /// Drops the job item, completing it with an error.
   void drop(BackpressureConfiguration configuration) {
-    configuration.closeError(BackpressureDropException());
+    configuration.closeError(const BackpressureDropException());
   }
 }
