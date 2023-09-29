@@ -2,15 +2,14 @@ Easy to use isolates for Dart and Flutter.
 
 ## Usage
 
-Almost as easy to use as [compute](https://api.flutter.dev/flutter/foundation/compute-constant.html),
-but using a long lived isolate. For example:
+Almost as easy to use as [compute](https://api.flutter.dev/flutter/foundation/compute.html), but using a long-lived
+isolate. For example:
 
 ```dart
 void main() async {
   final statefulIsolate = StatefulIsolate();
-  final computation = statefulIsolate.isolate;
-  print(await computation(_isPrime, 7));
-  print(await computation(_isPrime, 42));
+  print(await statefulIsolate.isolate(_isPrime, 7));
+  print(await statefulIsolate.isolate(_isPrime, 42));
   statefulIsolate.dispose();
 }
 
@@ -29,12 +28,12 @@ bool _isPrime(int value) {
 
 Remember to always dispose once you are done using the isolate to clean up and close the isolate.
 ```dart
-isolated.dispose();
+statefulIsolate.dispose();
 ```
 
 Different backpressure strategies are also supported by just sending in the desired strategy:
 ```dart
-Isolated(backpressureStrategy: DiscardNewBackPressureStrategy());
+StatefulIsolate(backpressureStrategy: DiscardNewBackPressureStrategy());
 ```
 
 Currently supported strategies can be found in the
@@ -46,7 +45,7 @@ Currently supported strategies can be found in the
 The API of this package is not final, and is subject to change.
 
 ### Breaking change
-
+* `integral_isolates` v0.5.0: the package now uses Dart 3.
 * `integral_isolates` v0.4.0: deprecated the class `Isolated` in favor of `StatefulIsolate`. The class
 `TailoredStatefulIsolate` was also added, adding support for an isolate that allows for specifying input and output
 types.
