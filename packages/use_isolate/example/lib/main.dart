@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:file/local.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:use_isolate/use_isolate.dart';
 
@@ -40,6 +42,18 @@ class IsolateTestingWidget extends HookWidget {
     return input.text;
   }
 
+  static void _init(RootIsolateToken rootIsolateToken) {
+    BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);
+    print('I am init!');
+  }
+
+  static void _native(Object? _) {
+    final dir = LocalFileSystem().directory(
+      '/Users/lohnn/Programming/integral_isolates',
+    );
+    print(dir.listSync());
+  }
+
   static String _error(_MethodInput input) {
     sleep(input.delay);
     throw Exception('error');
@@ -66,6 +80,22 @@ class IsolateTestingWidget extends HookWidget {
 
     return ListView(
       children: [
+        TextButton(
+          onPressed: () async {
+            final rootIsolateToken = RootIsolateToken.instance!;
+            await isolate(_init, rootIsolateToken);
+          },
+          child: const Text('Init BackgroundIsolateBinaryMessenger'),
+        ),
+        TextButton(
+          onPressed: () async {
+            await isolate(
+              _native,
+              null,
+            );
+          },
+          child: const Text('Run plugin in Isolate'),
+        ),
         TextButton(
           onPressed: () async {
             final hi = await compute(_hello, _MethodInput("hi"));
