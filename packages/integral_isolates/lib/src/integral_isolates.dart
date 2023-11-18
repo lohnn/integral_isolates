@@ -2,14 +2,6 @@ import 'dart:async';
 
 import 'package:integral_isolates/integral_isolates.dart';
 
-@Deprecated('Use StatefulIsolate directly instead')
-// ignore: public_member_api_docs
-class Isolated extends StatefulIsolate {
-  // ignore: public_member_api_docs
-  @Deprecated('Use StatefulIsolate directly instead')
-  Isolated({super.backpressureStrategy, super.autoInit});
-}
-
 /// Signature for the callback passed to [StatefulIsolate.compute].
 ///
 /// Instances of [IsolateCallback] must be functions that can be sent to an
