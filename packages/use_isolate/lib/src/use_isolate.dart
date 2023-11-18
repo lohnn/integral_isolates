@@ -80,5 +80,5 @@ class _IsolateHookState extends HookState<IsolateComputeImpl, _IsolateHook> {
   }
 
   @override
-  IsolateComputeImpl build(BuildContext context) => _isolated.isolate;
+  IsolateComputeImpl build(BuildContext context) => _isolated.compute;
 }

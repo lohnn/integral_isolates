@@ -52,7 +52,7 @@ export 'package:integral_isolates/integral_isolates.dart';
 TailoredIsolateComputeImpl<Q, R> useTailoredIsolate<Q, R>({
   BackpressureStrategy<Q, R>? backpressureStrategy,
 }) {
-  return use(_IsolateHook<Q, R>(backpressureStrategy)).isolate;
+  return use(_IsolateHook<Q, R>(backpressureStrategy)).compute;
 }
 
 class _IsolateHook<Q, R> extends Hook<TailoredStatefulIsolate<Q, R>> {

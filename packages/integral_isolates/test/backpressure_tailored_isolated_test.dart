@@ -15,11 +15,11 @@ void main() {
     Future<List<int>> runIsolate(
       BackpressureStrategy<int, int> strategy,
     ) async {
-      final isolated = TailoredStatefulIsolate<int, int>(
+      final isolate = TailoredStatefulIsolate<int, int>(
         backpressureStrategy: strategy,
         autoInit: false,
       );
-      await isolated.init();
+      await isolate.init();
 
       final responses = <int>[];
 
@@ -27,7 +27,7 @@ void main() {
         await Future.delayed(Duration(milliseconds: 50 * number));
 
         try {
-          final value = await isolated.isolate(_testFunction, number);
+          final value = await isolate.compute(_testFunction, number);
           responses.add(value);
         } catch (e) {
           // Noop
@@ -38,7 +38,7 @@ void main() {
         for (final number in iterable()) temp(number),
       ]);
 
-      isolated.dispose();
+      isolate.dispose();
 
       return responses;
     }
@@ -49,7 +49,7 @@ void main() {
 
       await Future.wait([
         for (final int in iterable())
-          isolate.isolate(_testFunction, int).then(responses.add),
+          isolate.compute(_testFunction, int).then(responses.add),
       ]);
 
       isolate.dispose();
@@ -78,7 +78,7 @@ void main() {
           (oldData, newData) => oldData + newData,
         ),
       );
-      isolate.isolate((message) => message + 2, 2);
+      isolate.compute((message) => message + 2, 2);
 
       final responses = await runIsolate(
         CombineBackPressureStrategy<int, int>((oldData, newData) {

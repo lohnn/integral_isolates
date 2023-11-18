@@ -17,7 +17,7 @@ void main() {
     group('Just list', () {
       test('Normal case', () async {
         final before = DateTime.now();
-        final sum = await isolate.isolate(_sum, commonList);
+        final sum = await isolate.compute(_sum, commonList);
         print(DateTime.now().difference(before).inMilliseconds);
         expect(sum, 1249999975000000);
       });
@@ -27,7 +27,7 @@ void main() {
       test('Normal case', () async {
         final before = DateTime.now();
         final unmodifiable = List.unmodifiable(commonList);
-        final sum = await isolate.isolate(_sum, unmodifiable.cast<int>());
+        final sum = await isolate.compute(_sum, unmodifiable.cast<int>());
         print(DateTime.now().difference(before).inMilliseconds);
         expect(sum, 1249999975000000);
       });
@@ -37,7 +37,7 @@ void main() {
       test('Normal case', () async {
         final before = DateTime.now();
         final uint8List = Uint32List.fromList(commonList);
-        final sum = await isolate.isolate(_sumUint32List, uint8List);
+        final sum = await isolate.compute(_sumUint32List, uint8List);
         print(DateTime.now().difference(before).inMilliseconds);
         expect(sum, 1249999975000000);
       });
@@ -48,7 +48,7 @@ void main() {
       test('Normal case', () async {
         final before = DateTime.now();
         final transferable = TransferableTypedData.fromList([copiedList]);
-        final sum = await isolate.isolate(_sumTransferable, transferable);
+        final sum = await isolate.compute(_sumTransferable, transferable);
         print(DateTime.now().difference(before).inMilliseconds);
         expect(sum, 1249999975000000);
       });

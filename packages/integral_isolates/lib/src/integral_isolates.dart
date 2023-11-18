@@ -10,7 +10,7 @@ class Isolated extends StatefulIsolate {
   Isolated({super.backpressureStrategy, super.autoInit});
 }
 
-/// Signature for the callback passed to [StatefulIsolate.isolate].
+/// Signature for the callback passed to [StatefulIsolate.compute].
 ///
 /// Instances of [IsolateCallback] must be functions that can be sent to an
 /// isolate.
@@ -20,7 +20,7 @@ class Isolated extends StatefulIsolate {
 /// from the official Flutter documentation.
 typedef IsolateCallback<Q, R> = FutureOr<R> Function(Q message);
 
-/// Signature for the callback passed to [StatefulIsolate.isolateStream].
+/// Signature for the callback passed to [StatefulIsolate.computeStream].
 ///
 /// Instances of [IsolateStream] must be functions that can be sent to an
 /// isolate.

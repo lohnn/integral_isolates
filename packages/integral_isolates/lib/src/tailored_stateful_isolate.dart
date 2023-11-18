@@ -9,7 +9,7 @@ import 'package:meta/meta.dart';
 /// Data type of the implementation of the computation function.
 ///
 /// Can be used as data type for the computation function, for example when
-/// returning the [TailoredStatefulIsolate.isolate] as a return type of a
+/// returning the [TailoredStatefulIsolate.compute] as a return type of a
 /// function.
 ///
 /// [Q] is the input parameter type.
@@ -21,7 +21,7 @@ typedef TailoredIsolateComputeImpl<Q, R> = Future<R> Function(
   String? debugLabel,
 });
 
-/// Interface for exposing the [isolate] function for a
+/// Interface for exposing the [compute] function for a
 /// [TailoredStatefulIsolate].
 ///
 /// Useful for when wrapping the functionality and just want to expose the
@@ -29,21 +29,22 @@ typedef TailoredIsolateComputeImpl<Q, R> = Future<R> Function(
 sealed class TailoredIsolateGetter<Q, R> {
   /// The computation function, a function used the same way as Flutter's
   /// compute function, but for a long lived isolate.
-  Future<R> isolate(
+  Future<R> compute(
     IsolateCallback<Q, R> callback,
     Q message, {
     String? debugLabel,
   });
 
+  // TODO(lohnn): this documentation is incorrect
   /// The computation function, a function used the same way as Flutter's
   /// compute function, but for a long lived isolate.
   ///
-  /// Very similar to the [isolate] function, but instead of returning a
+  /// Very similar to the [compute] function, but instead of returning a
   /// [Future], a [Stream] is returned to allow for a response in multiple
   /// parts. Every stream event will be sent individually through from the
   /// isolate.
   @experimental
-  Stream<R> isolateStream(
+  Stream<R> computeStream(
     IsolateStream<Q, R> callback,
     Q message, {
     String? debugLabel,
@@ -62,7 +63,7 @@ sealed class TailoredIsolateGetter<Q, R> {
 /// Using [backpressureStrategy], you can decide how to handle the case when too
 /// many calls to the isolate are made for it to handle in time.
 ///
-/// Usage of the [isolate] function is used the same way as the compute function
+/// Usage of the [compute] function is used the same way as the compute function
 /// in the Flutter library.
 ///
 /// The following code is similar to the example from Flutter's compute
@@ -71,11 +72,10 @@ sealed class TailoredIsolateGetter<Q, R> {
 /// ```dart
 /// void main() async {
 ///   final statefulIsolate = TailoredStatefulIsolate<int, bool>();
-///   final computation = statefulIsolate.isolate;
-///   print(await computation(_isPrime, 7));
-///   print(await computation(_isPrime, 42));
-///   print(await computation(_isPrime, 50));
-///   print(await computation(_isPrime, 70));
+///   print(await statefulIsolate.compute(_isPrime, 7));
+///   print(await statefulIsolate.compute(_isPrime, 42));
+///   print(await statefulIsolate.compute(_isPrime, 50));
+///   print(await statefulIsolate.compute(_isPrime, 70));
 ///   statefulIsolate.dispose();
 /// }
 ///
@@ -95,7 +95,7 @@ sealed class TailoredIsolateGetter<Q, R> {
 /// See also:
 ///
 ///  * [StatefulIsolate], to create a long lived isolate that has no predefined
-///  input and output typed, but rather decides type per call to the [isolate]
+///  input and output typed, but rather decides type per call to the [compute]
 ///  function.
 final class TailoredStatefulIsolate<Q, R>
     with IsolateBase<Q, R>
@@ -120,7 +120,7 @@ final class TailoredStatefulIsolate<Q, R>
   }
 
   @override
-  Future<R> isolate(
+  Future<R> compute(
     IsolateCallback<Q, R> callback,
     Q message, {
     String? debugLabel,
@@ -145,7 +145,7 @@ final class TailoredStatefulIsolate<Q, R>
 
   @experimental
   @override
-  Stream<R> isolateStream(
+  Stream<R> computeStream(
     IsolateStream<Q, R> callback,
     Q message, {
     String? debugLabel,

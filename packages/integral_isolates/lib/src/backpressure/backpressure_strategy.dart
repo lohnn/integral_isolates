@@ -43,8 +43,8 @@ abstract class BackpressureConfiguration<Q, R> {
   Future<void> handleResponse(StreamQueue<dynamic> isolateToMainPort);
 }
 
-/// Job queue item for use with the [StatefulIsolate.isolate] and
-/// [TailoredStatefulIsolate.isolate] functions.
+/// Job queue item for use with the [StatefulIsolate.compute] and
+/// [TailoredStatefulIsolate.compute] functions.
 @internal
 class FutureBackpressureConfiguration<Q, R>
     extends BackpressureConfiguration<Q, R> {
@@ -84,8 +84,8 @@ class FutureBackpressureConfiguration<Q, R>
   }
 }
 
-/// Job queue item for use with the [StatefulIsolate.isolateStream] and
-/// [TailoredStatefulIsolate.isolateStream] functions.
+/// Job queue item for use with the [StatefulIsolate.computeStream] and
+/// [TailoredStatefulIsolate.computeStream] functions.
 @internal
 class StreamBackpressureConfiguration<Q, R>
     extends BackpressureConfiguration<Q, R> {
