@@ -63,7 +63,7 @@ sealed class TailoredIsolateGetter<Q, R> {
 /// Using [backpressureStrategy], you can decide how to handle the case when too
 /// many calls to the isolate are made for it to handle in time.
 ///
-/// Usage of the [compute] function is used the same way as the compute function
+/// The [compute] function is used the same way as the compute function
 /// in the Flutter library.
 ///
 /// The following code is similar to the example from Flutter's compute
