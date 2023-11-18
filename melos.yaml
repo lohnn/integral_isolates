@@ -15,7 +15,7 @@ command:
       async: ^2.11.0
       flutter:
         sdk: flutter
-      flutter_hooks: ^0.20.1
+      flutter_hooks: ^0.20.3
       integral_isolates: ^0.4.1
       meta: ^1.9.1
     dev_dependencies:

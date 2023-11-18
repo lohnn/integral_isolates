@@ -18,11 +18,11 @@ void main() {
     List iterable() => [1, 'test', 2, 3, 4, 5].toList();
 
     Future<List> runIsolate(BackpressureStrategy strategy) async {
-      final isolated = StatefulIsolate(
+      final isolate = StatefulIsolate(
         backpressureStrategy: strategy,
         autoInit: false,
       );
-      await isolated.init();
+      await isolate.init();
 
       final responses = [];
 
@@ -31,14 +31,14 @@ void main() {
         await Future.delayed(Duration(milliseconds: 50 * delayMultiplier++));
         if (input is String) {
           try {
-            final value = await isolated.isolate(_testFunctionStr, input);
+            final value = await isolate.compute(_testFunctionStr, input);
             responses.add(value);
           } catch (e) {
             // Noop
           }
         } else if (input is int) {
           try {
-            final value = await isolated.isolate(_testFunction, input);
+            final value = await isolate.compute(_testFunction, input);
             responses.add(value);
           } catch (e) {
             // Noop
@@ -50,7 +50,7 @@ void main() {
         for (final number in iterable()) temp(number),
       ]);
 
-      isolated.dispose();
+      isolate.dispose();
 
       return responses;
     }
@@ -62,9 +62,9 @@ void main() {
       await Future.wait([
         for (final input in iterable())
           if (input is String)
-            isolate.isolate(_testFunctionStr, input).then(responses.add)
+            isolate.compute(_testFunctionStr, input).then(responses.add)
           else if (input is int)
-            isolate.isolate(_testFunction, input).then(responses.add),
+            isolate.compute(_testFunction, input).then(responses.add),
       ]);
 
       isolate.dispose();

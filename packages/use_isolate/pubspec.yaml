@@ -10,7 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_hooks: ^0.20.1
+  flutter_hooks: ^0.20.3
   integral_isolates: ^0.4.1
 dev_dependencies:
   lint: ^2.1.2
