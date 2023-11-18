@@ -13,4 +13,6 @@ dependencies:
   flutter_hooks: ^0.20.3
   integral_isolates: ^0.4.1
 dev_dependencies:
+  flutter_test:
+    sdk: flutter
   lint: ^2.1.2

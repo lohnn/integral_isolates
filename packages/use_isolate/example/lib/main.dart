@@ -58,7 +58,7 @@ class IsolateTestingWidget extends HookWidget {
 
     Future<String?> safeHello(_MethodInput input) async {
       try {
-        return await tailoredIsolate(_hello, input);
+        return await tailoredIsolate.compute(_hello, input);
       } catch (e) {
         return null;
       }
@@ -83,7 +83,7 @@ class IsolateTestingWidget extends HookWidget {
         ),
         TextButton(
           onPressed: () async {
-            final hi = await isolate(
+            final hi = await isolate.compute(
                 _hello, _MethodInput("hi", delay: const Duration(seconds: 2)));
             print(hi);
           },
@@ -91,30 +91,32 @@ class IsolateTestingWidget extends HookWidget {
         ),
         TextButton(
           onPressed: () async {
-            final yo = await isolate(_hello, _MethodInput("yo"));
+            final yo = await isolate.compute(_hello, _MethodInput("yo"));
             print(yo);
           },
           child: const Text('Run other'),
         ),
         TextButton(
           onPressed: () async {
-            final hi = await isolate(_hello, _MethodInput("hi"));
+            final hi = await isolate.compute(_hello, _MethodInput("hi"));
             print(hi);
-            final yo = await isolate(_hello, _MethodInput("yo"));
+            final yo = await isolate.compute(_hello, _MethodInput("yo"));
             print(yo);
           },
           child: const Text('Run two in queue'),
         ),
         TextButton(
           onPressed: () async {
-            isolate(_hello, _MethodInput("hi")).then(print);
-            isolate(
-              _hello,
-              _MethodInput(
-                "yo",
-                delay: const Duration(milliseconds: 500),
-              ),
-            ).then(print);
+            isolate.compute(_hello, _MethodInput("hi")).then(print);
+            isolate
+                .compute(
+                  _hello,
+                  _MethodInput(
+                    "yo",
+                    delay: const Duration(milliseconds: 500),
+                  ),
+                )
+                .then(print);
           },
           child: const Text('Run two in parallel, listen to value'),
         ),
@@ -122,8 +124,8 @@ class IsolateTestingWidget extends HookWidget {
           onPressed: () async {
             final responses = await Future.wait(
               [
-                isolate(_hello, _MethodInput("hi")),
-                isolate(
+                isolate.compute(_hello, _MethodInput("hi")),
+                isolate.compute(
                   _hello,
                   _MethodInput("ho", delay: const Duration(milliseconds: 500)),
                 ),
@@ -151,7 +153,7 @@ class IsolateTestingWidget extends HookWidget {
         ),
         TextButton(
           onPressed: () async {
-            final hi = await isolate(_error, _MethodInput("hi"));
+            final hi = await isolate.compute(_error, _MethodInput("hi"));
             print(hi);
           },
           child: const Text('Error'),
