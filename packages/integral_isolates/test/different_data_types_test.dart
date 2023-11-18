@@ -27,7 +27,7 @@ void main() {
 
       expectLater(
         isolate.compute(
-          print,
+          (_) {},
           ReceivePort(),
         ),
         throwsArgumentError,
