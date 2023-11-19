@@ -28,10 +28,10 @@ typedef IsolateStreamComputeImpl = Future<R> Function<Q, R>(
 
 /// Interface for exposing the [compute] function for a [StatefulIsolate].
 ///
-/// Useful for when wrapping the functionality and just want to expose the
+/// Useful when wrapping the functionality and just want to expose the
 /// computation functions.
 sealed class IsolateGetter {
-  /// The computation function, a function used the same way as Flutter's
+  /// The compute function, used in the same way as Flutter's
   /// compute function, but for a long lived isolate.
   Future<R> compute<Q, R>(
     IsolateCallback<Q, R> callback,
@@ -61,7 +61,7 @@ sealed class IsolateGetter {
 /// Using [backpressureStrategy], you can decide how to handle the case when too
 /// many calls to the isolate are made for it to handle in time.
 ///
-/// Usage of the [compute] function is used the same way as the compute function
+/// The [compute] function is used the same way as the compute function
 /// in the Flutter library.
 ///
 /// The following code is similar to the example from Flutter's compute
