@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:use_isolate/src/use_isolate.dart';
 
 void main() {
-  testWidgets('useIsolate creates a great stateful isolate', (tester) async {
+  testWidgets('useIsolate creates a StatefulIsolate', (tester) async {
     await tester.runAsync(() async {
       late StatefulIsolate isolate;
 
@@ -29,7 +29,7 @@ void main() {
 
       await expectLater(
         isolate.compute(
-          (message) => null,
+          (_) => null,
           'message',
         ),
         throwsA(isA<IsolateClosedDropException>()),
