@@ -58,18 +58,24 @@ void main() {
     });
 
     test('No backpressure strategy', () async {
-      final responses = await runIsolate(NoBackPressureStrategy());
-      expect(responses, [1, 2, 3, 4, 5]);
+      expect(
+        runIsolate(NoBackPressureStrategy()),
+        completion([1, 2, 3, 4, 5]),
+      );
     });
 
     test('Discard new backpressure strategy', () async {
-      final responses = await runIsolate(DiscardNewBackPressureStrategy());
-      expect(responses, [1, 2]);
+      expect(
+        runIsolate(DiscardNewBackPressureStrategy()),
+        completion([1, 2]),
+      );
     });
 
     test('Replace backpressure strategy', () async {
-      final responses = await runIsolate(ReplaceBackpressureStrategy());
-      expect(responses, [1, 5]);
+      expect(
+        runIsolate(ReplaceBackpressureStrategy()),
+        completion([1, 5]),
+      );
     });
 
     test('Combine backpressure strategy', () async {
@@ -80,12 +86,15 @@ void main() {
       );
       isolate.compute((message) => message + 2, 2);
 
-      final responses = await runIsolate(
+      final future = runIsolate(
         CombineBackPressureStrategy<int, int>((oldData, newData) {
           return oldData + newData;
         }),
       );
-      expect(responses, [1, 14]);
+       expect(
+        future,
+        completion([1, 14]),
+      );
     });
   });
 }

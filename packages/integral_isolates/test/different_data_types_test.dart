@@ -9,13 +9,13 @@ void main() {
 
     test('Send different data types and expect answers', () async {
       expect(
-        await isolate.compute((number) => number + 2, 1),
-        equals(3),
+        isolate.compute((number) => number + 2, 1),
+        completion(3),
       );
 
       expect(
-        await isolate.compute((text) => 'prefix: $text', 'testing'),
-        equals('prefix: testing'),
+        isolate.compute((text) => 'prefix: $text', 'testing'),
+        completion('prefix: testing'),
       );
     });
 
