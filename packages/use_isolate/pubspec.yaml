@@ -10,9 +10,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_hooks: ^0.20.3
+  flutter_hooks: ^0.20.4
   integral_isolates: ^0.4.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  lint: ^2.2.0
+  lint: ^2.3.0

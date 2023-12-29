@@ -4,7 +4,8 @@ publish_to: 'none'
 version: 0.1.0
 
 environment:
-  sdk: ">=2.18.0 <3.0.0"
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.0.0"
 
 dependencies:
   flutter:
@@ -14,10 +15,9 @@ dependencies:
     path: ../../integral_isolates
   use_isolate:
     path: ..
-  cupertino_icons: ^1.0.2
 
 dev_dependencies:
-  flutter_lints: ^2.0.0
+  lint: ^2.3.0
 
 flutter:
   uses-material-design: true
