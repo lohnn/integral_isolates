@@ -3,11 +3,12 @@ The power of [integral_isolates](https://pub.dev/packages/integral_isolates) nea
 
 ## Usage
 
-Using an isolate in a hook has never been simpler. With the use of `useIsolate()` we you can get a
-compute function similar to [compute](https://api.flutter.dev/flutter/foundation/compute-constant.html)
+Using an isolate in a hook has never been simpler. With the use of `useIsolate()` you can get a
+compute function similar to [compute](https://api.flutter.dev/flutter/foundation/compute.html)
 but that lives longer. You don't have to care about lifecycle, the hook handles that for you.
 
 Example:
+
 ```dart
 class TestingIsolateHook extends HookWidget {
   const TestingIsolateHook({super.key});
@@ -19,7 +20,7 @@ class TestingIsolateHook extends HookWidget {
 
     return TextButton(
       onPressed: () async {
-        var isPrime = await isolate(_isPrime, number.value);
+        final isPrime = await isolate.compute(_isPrime, number.value);
         print('${number.value} is a prime number? ${isPrime}');
         number.value += 1;
       },
@@ -45,9 +46,27 @@ class TestingIsolateHook extends HookWidget {
 
 Just as integral_isolates, this hook supports backpressure strategies, just send a strategy in as
 parameter:
+
 ```dart
-useIsolate(backpressureStrategy: DiscardNewBackPressureStrategy());
+final isolate = useIsolate(backpressureStrategy: DiscardNewBackPressureStrategy());
 ```
+
+### What about TailoredStatefulIsolate?
+
+You might know that you can create tailored stateful isolates with
+[integral_isolates](https://pub.dev/packages/integral_isolates). This is now also possible with use_isolate.
+
+To create a tailored isolate that takes a `double` as the input parameter and returns an `int`, just use this hook
+instead:
+
+```dart
+final isolate = useTailoredIsolate<double, int>();
+```
+
+### Breaking change
+
+* `use_isolate` v0.3.0: now returns the whole isolate, requiring you to explicitly type out `isolate.compute(..)`
+  instead of just `isolate(..)`. This is due to support for `isolate.computeStream(..)` is added.
 
 ## Additional information
 
