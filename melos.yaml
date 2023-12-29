@@ -27,7 +27,7 @@ command:
 
 scripts:
   analyze:
-    run: melos exec -c 1 -- flutter analyze --fatal-infos
+    run: melos exec -- flutter analyze --fatal-infos
     description: Run `flutter analyze` for all packages.
 
   doc:
@@ -39,7 +39,7 @@ scripts:
     description: Run `flutter format` for all packages.
 
   test:select:
-    run: melos exec -c 1 -- dart test
+    run: melos exec -- dart test
     description: Run `flutter test` for selected packages.
     select-package:
       dir-exists:
