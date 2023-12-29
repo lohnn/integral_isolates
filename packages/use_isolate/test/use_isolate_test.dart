@@ -4,7 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:use_isolate/src/use_isolate.dart';
 
 void main() {
-  testWidgets('useIsolate creates a StatefulIsolate', (tester) async {
+  testWidgets('Testing lifecycle of StatefulIsolate from useIsolate',
+      (tester) async {
     await tester.runAsync(() async {
       late StatefulIsolate isolate;
 

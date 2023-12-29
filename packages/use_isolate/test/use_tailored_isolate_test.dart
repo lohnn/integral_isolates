@@ -5,7 +5,7 @@ import 'package:use_isolate/src/use_tailored_isolate.dart';
 
 void main() {
   testWidgets(
-    'useTailoredIsolate creates a TailoredStatefulIsolate',
+    'Testing lifecycle of TailoredStatefulIsolate from useTailoredIsolate',
     (tester) async {
       await tester.runAsync(() async {
         late TailoredStatefulIsolate<double, int> isolate;
