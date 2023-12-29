@@ -27,7 +27,7 @@ void main() {
       final responses = [];
 
       int delayMultiplier = 0;
-      Future temp(dynamic input) async {
+      Future runCompute(dynamic input) async {
         await Future.delayed(Duration(milliseconds: 50 * delayMultiplier++));
         if (input is String) {
           try {
@@ -47,7 +47,7 @@ void main() {
       }
 
       await Future.wait([
-        for (final number in iterable()) temp(number),
+        for (final number in iterable()) runCompute(number),
       ]);
 
       isolate.dispose();
