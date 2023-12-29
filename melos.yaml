@@ -2,6 +2,7 @@ name: integral_isolates
 
 packages:
   - packages/*
+  - packages/*/example
 
 command:
   version:
