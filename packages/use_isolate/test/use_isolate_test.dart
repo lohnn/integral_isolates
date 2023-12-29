@@ -38,6 +38,28 @@ void main() {
     });
   });
 
+  testWidgets('It is possible to set backpressure strategy for useIsolate',
+      (tester) async {
+    await tester.runAsync(() async {
+      late StatefulIsolate isolate;
+
+      await tester.pumpWidget(
+        HookBuilder(
+          builder: (context) {
+            isolate =
+                useIsolate(backpressureStrategy: ReplaceBackpressureStrategy());
+            return Container();
+          },
+        ),
+      );
+
+      expect(
+        isolate.backpressureStrategy,
+        isA<ReplaceBackpressureStrategy>(),
+      );
+    });
+  });
+
   testWidgets('compute function works for StatefulIsolate from useIsolate',
       (tester) async {
     await tester.runAsync(() async {

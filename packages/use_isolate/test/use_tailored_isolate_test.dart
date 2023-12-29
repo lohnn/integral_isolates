@@ -41,6 +41,30 @@ void main() {
   );
 
   testWidgets(
+      'It is possible to set backpressure strategy for useTailoredIsolate',
+      (tester) async {
+    await tester.runAsync(() async {
+      late TailoredStatefulIsolate<double, int> isolate;
+
+      await tester.pumpWidget(
+        HookBuilder(
+          builder: (context) {
+            isolate = useTailoredIsolate<double, int>(
+              backpressureStrategy: ReplaceBackpressureStrategy(),
+            );
+            return Container();
+          },
+        ),
+      );
+
+      expect(
+        isolate.backpressureStrategy,
+        isA<ReplaceBackpressureStrategy>(),
+      );
+    });
+  });
+
+  testWidgets(
       'compute function works for TailoredStatefulIsolate from useTailoredIsolate',
       (tester) async {
     await tester.runAsync(() async {

@@ -5,8 +5,6 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:integral_isolates/integral_isolates.dart';
 
-export 'package:integral_isolates/integral_isolates.dart';
-
 /// A hook that exposes a [StatefulIsolate].
 ///
 /// The hook allows for overriding the default backpressure strategy by setting
