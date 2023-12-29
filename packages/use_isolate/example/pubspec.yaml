@@ -10,8 +10,10 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_hooks:
-  integral_isolates: ^0.4.0
-  use_isolate: ^0.2.0
+  integral_isolates:
+    path: ../../integral_isolates
+  use_isolate:
+    path: ..
   cupertino_icons: ^1.0.2
 
 dev_dependencies:
