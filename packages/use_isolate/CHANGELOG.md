@@ -1,3 +1,10 @@
+## 0.3.0
+
+> Note: This release has breaking changes.
+
+ - **BREAKING** **REFACTOR**: Computation functions are now renamed to `compute` and `computeIsolate` (#37).
+ - **BREAKING** **FEAT**(19): hooks stream and tailored isolate support added (#39).
+
 ## 0.2.0+2
 
  - **FIX**: Disposal of Isolate for hooks implemented (#30).
