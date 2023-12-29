@@ -2,15 +2,14 @@ Easy to use isolates for Dart and Flutter.
 
 ## Usage
 
-Almost as easy to use as [compute](https://api.flutter.dev/flutter/foundation/compute-constant.html),
-but using a long lived isolate. For example:
+Almost as easy to use as [compute](https://api.flutter.dev/flutter/foundation/compute.html),
+but using a long-lived isolate. For example:
 
 ```dart
 void main() async {
   final statefulIsolate = StatefulIsolate();
-  final computation = statefulIsolate.isolate;
-  print(await computation(_isPrime, 7));
-  print(await computation(_isPrime, 42));
+  print(await statefulIsolate.compute(_isPrime, 7));
+  print(await statefulIsolate.compute(_isPrime, 42));
   statefulIsolate.dispose();
 }
 
@@ -29,7 +28,7 @@ bool _isPrime(int value) {
 
 Remember to always dispose once you are done using the isolate to clean up and close the isolate.
 ```dart
-isolated.dispose();
+statefulIsolate.dispose();
 ```
 
 Different backpressure strategies are also supported by just sending in the desired strategy:
