@@ -35,9 +35,8 @@ sealed class TailoredIsolateGetter<Q, R> {
     String? debugLabel,
   });
 
-  // TODO(lohnn): this documentation is incorrect
-  /// The computation function, a function used the same way as Flutter's
-  /// compute function, but for a long lived isolate.
+  /// A computation function that returns a [Stream] of responses from the
+  /// long lived isolate.
   ///
   /// Very similar to the [compute] function, but instead of returning a
   /// [Future], a [Stream] is returned to allow for a response in multiple

@@ -27,7 +27,7 @@ void main() {
       final responses = [];
 
       int delayMultiplier = 0;
-      Future temp(dynamic input) async {
+      Future runCompute(dynamic input) async {
         await Future.delayed(Duration(milliseconds: 50 * delayMultiplier++));
         if (input is String) {
           try {
@@ -47,7 +47,7 @@ void main() {
       }
 
       await Future.wait([
-        for (final number in iterable()) temp(number),
+        for (final number in iterable()) runCompute(number),
       ]);
 
       isolate.dispose();
@@ -73,28 +73,34 @@ void main() {
     });
 
     test('No backpressure strategy', () async {
-      final responses = await runIsolate(NoBackPressureStrategy());
-      expect(responses, [1, 'prefix: test', 2, 3, 4, 5]);
+      await expectLater(
+        runIsolate(NoBackPressureStrategy()),
+        completion([1, 'prefix: test', 2, 3, 4, 5]),
+      );
     });
 
     test('Discard new backpressure strategy', () async {
-      final responses = await runIsolate(DiscardNewBackPressureStrategy());
-      expect(responses, [1, 'prefix: test']);
+      await expectLater(
+        runIsolate(DiscardNewBackPressureStrategy()),
+        completion([1, 'prefix: test']),
+      );
     });
 
     test('Replace backpressure strategy', () async {
-      final responses = await runIsolate(ReplaceBackpressureStrategy());
-      expect(responses, [1, 5]);
+      await expectLater(
+        runIsolate(ReplaceBackpressureStrategy()),
+        completion([1, 5]),
+      );
     });
 
     test('Combine backpressure strategy', () async {
-      final responses = await runIsolate(
+      final future = runIsolate(
         CombineBackPressureStrategy((oldData, newData) {
           if (oldData is num && newData is num) return oldData + newData;
           return newData;
         }),
       );
-      expect(responses, [1, 14]);
+      expect(future, completion([1, 14]));
     });
   });
 }
