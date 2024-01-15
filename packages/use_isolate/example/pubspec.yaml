@@ -10,10 +10,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  file: any
   flutter_hooks: ^0.20.4
   integral_isolates: ^0.5.0
   use_isolate: ^0.3.0
+  shared_preferences: ^2.2.2
 
 dev_dependencies:
   lint: ^2.3.0

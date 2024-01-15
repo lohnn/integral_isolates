@@ -1,10 +1,10 @@
 import 'dart:io';
 
-import 'package:file/local.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:use_isolate/use_isolate.dart';
 
 void main() {
@@ -42,16 +42,22 @@ class IsolateTestingWidget extends HookWidget {
     return input.text;
   }
 
-  static void _init(RootIsolateToken rootIsolateToken) {
+  static void _initPluginForIsolate(RootIsolateToken rootIsolateToken) {
     BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);
     print('I am init!');
   }
 
-  static void _native(Object? _) {
-    final dir = LocalFileSystem().directory(
-      '/Users/lohnn/Programming/integral_isolates',
-    );
-    print(dir.listSync());
+  static Future<void> _readSharedPreferences(Object? _) async {
+    // You can now use the shared_preferences plugin.
+    final sharedPreferences = await SharedPreferences.getInstance();
+    print(sharedPreferences.getString('lastWrite'));
+  }
+
+  static Future<void> _writeSharedPreferences(Object? _) async {
+    // You can now use the shared_preferences plugin.
+    final sharedPreferences = await SharedPreferences.getInstance();
+    sharedPreferences.setString('lastWrite', DateTime.now().toIso8601String());
+    print('Data written to SharedPreferences');
   }
 
   static String _error(_MethodInput input) {
@@ -83,18 +89,27 @@ class IsolateTestingWidget extends HookWidget {
         TextButton(
           onPressed: () async {
             final rootIsolateToken = RootIsolateToken.instance!;
-            await isolate(_init, rootIsolateToken);
+            await isolate.compute(_initPluginForIsolate, rootIsolateToken);
           },
           child: const Text('Init BackgroundIsolateBinaryMessenger'),
         ),
         TextButton(
           onPressed: () async {
-            await isolate(
-              _native,
+            await isolate.compute(
+              _readSharedPreferences,
               null,
             );
           },
-          child: const Text('Run plugin in Isolate'),
+          child: const Text('Read shared preference config'),
+        ),
+        TextButton(
+          onPressed: () async {
+            await isolate.compute(
+              _writeSharedPreferences,
+              null,
+            );
+          },
+          child: const Text('Read shared preference config'),
         ),
         TextButton(
           onPressed: () async {
