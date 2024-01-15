@@ -22,7 +22,7 @@ void main() async {
       const Duration(milliseconds: 100),
       () => threadSleepComputation(1),
     ),
-    isolated.isolate(leibnizPi, 500000000),
+    isolated.compute(leibnizPi, 500000000),
     Future.delayed(
       const Duration(milliseconds: 100),
       () => threadSleepComputation(2),

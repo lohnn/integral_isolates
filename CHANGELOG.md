@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2023-12-29
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - [`integral_isolates` - `v0.5.0`](#integral_isolates---v050)
+ - [`use_isolate` - `v0.3.0`](#use_isolate---v030)
+
+Packages with other changes:
+
+ - There are no other changes in this release.
+
+---
+
+#### `integral_isolates` - `v0.5.0`
+
+ - **REFACTOR**: code cleanup and small internal refactor (#27).
+ - **DOCS**: Slightly improved documentation of integral_isolates (#40).
+ - **BREAKING** **REFACTOR**: Computation functions are now renamed to `compute` and `computeIsolate` (#37).
+ - **BREAKING** **FEAT**(19): hooks stream and tailored isolate support added (#39).
+
+#### `use_isolate` - `v0.3.0`
+
+ - **BREAKING** **REFACTOR**: Computation functions are now renamed to `compute` and `computeIsolate` (#37).
+ - **BREAKING** **FEAT**(19): hooks stream and tailored isolate support added (#39).
+
+
 ## 2023-08-01
 
 ### Changes

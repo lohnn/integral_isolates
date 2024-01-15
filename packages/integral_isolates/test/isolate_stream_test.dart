@@ -9,7 +9,7 @@ void main() {
 
     test('Send different data types and expect answers', () async {
       expectLater(
-        isolate.isolateStream(
+        isolate.computeStream(
           (_) => Stream.fromIterable([2, 3, 5, 42]),
           const Object(),
         ),
@@ -17,7 +17,7 @@ void main() {
       );
 
       expectLater(
-        isolate.isolateStream(
+        isolate.computeStream(
           (_) => Stream.fromFutures([
             Future.delayed(const Duration(milliseconds: 100), () => 'are'),
             Future.value('Async calls'),
@@ -34,7 +34,7 @@ void main() {
 
     test('Send unsupported data type should throw exception', () async {
       expectLater(
-        isolate.isolateStream(
+        isolate.computeStream(
           (_) => Stream.fromIterable([2, 3, 5, 42]),
           const Object(),
         ),
@@ -43,7 +43,7 @@ void main() {
 
       expectLater(
         isolate
-            .isolateStream(
+            .computeStream(
               (_) => Stream.fromIterable([2, 3, 5, 42]),
               ReceivePort(),
             )
@@ -52,7 +52,7 @@ void main() {
       );
 
       expect(
-        await isolate.isolate((number) => number + 2, 5),
+        await isolate.compute((number) => number + 2, 5),
         equals(7),
       );
     });
@@ -60,13 +60,13 @@ void main() {
     test('Trying to return unsupported data type should throw exception',
         () async {
       expectLater(
-        await isolate.isolate((number) => number + 8, 1),
+        await isolate.compute((number) => number + 8, 1),
         equals(9),
       );
 
       expectLater(
         isolate
-            .isolateStream(
+            .computeStream(
               (_) => Stream.value(ReceivePort()),
               'Test String',
             )
@@ -75,7 +75,7 @@ void main() {
       );
 
       expectLater(
-        isolate.isolateStream(
+        isolate.computeStream(
           (_) => Stream.fromIterable([2, 3, 5, 42]),
           const Object(),
         ),
@@ -91,12 +91,12 @@ void main() {
 
     test('Send different data types and expect answers', () async {
       await expectLater(
-        await isolate.isolate((number) => number + 2, 1),
+        await isolate.compute((number) => number + 2, 1),
         equals(3),
       );
 
       await expectLater(
-        isolate.isolateStream(
+        isolate.computeStream(
           (_) => Stream.fromIterable([2, 3, 5, 42]),
           2,
         ),

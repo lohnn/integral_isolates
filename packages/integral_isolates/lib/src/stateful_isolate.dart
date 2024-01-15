@@ -9,7 +9,7 @@ import 'package:meta/meta.dart';
 /// Data type of the implementation of the computation function.
 ///
 /// Can be used as data type for the computation function, for example when
-/// returning the [StatefulIsolate.isolate] as a return type of a function.
+/// returning the [StatefulIsolate.compute] as a return type of a function.
 typedef IsolateComputeImpl = Future<R> Function<Q, R>(
   IsolateCallback<Q, R> callback,
   Q message, {
@@ -19,35 +19,35 @@ typedef IsolateComputeImpl = Future<R> Function<Q, R>(
 /// Data type of the implementation of the stream function.
 ///
 /// Can be used as data type for the stream function, for example when returning
-/// the [StatefulIsolate.isolateStream] as a return type of a function.
+/// the [StatefulIsolate.computeStream] as a return type of a function.
 typedef IsolateStreamComputeImpl = Future<R> Function<Q, R>(
   IsolateStream<Q, R> callback,
   Q message, {
   String? debugLabel,
 });
 
-/// Interface for exposing the [isolate] function for a [StatefulIsolate].
+/// Interface for exposing the [compute] function for a [StatefulIsolate].
 ///
-/// Useful for when wrapping the functionality and just want to expose the
-/// computation function.
+/// Useful when wrapping the functionality and just want to expose the
+/// computation functions.
 sealed class IsolateGetter {
-  /// The computation function, a function used the same way as Flutter's
+  /// The compute function, used in the same way as Flutter's
   /// compute function, but for a long lived isolate.
-  Future<R> isolate<Q, R>(
+  Future<R> compute<Q, R>(
     IsolateCallback<Q, R> callback,
     Q message, {
     String? debugLabel,
   });
 
-  /// The computation function, a function used the same way as Flutter's
-  /// compute function, but for a long lived isolate.
+  /// A computation function that returns a [Stream] of responses from the
+  /// long lived isolate.
   ///
-  /// Very similar to the [isolate] function, but instead of returning a
+  /// Very similar to the [compute] function, but instead of returning a
   /// [Future], a [Stream] is returned to allow for a response in multiple
   /// parts. Every stream event will be sent individually through from the
   /// isolate.
   @experimental
-  Stream<R> isolateStream<Q, R>(
+  Stream<R> computeStream<Q, R>(
     IsolateStream<Q, R> callback,
     Q message, {
     String? debugLabel,
@@ -60,7 +60,7 @@ sealed class IsolateGetter {
 /// Using [backpressureStrategy], you can decide how to handle the case when too
 /// many calls to the isolate are made for it to handle in time.
 ///
-/// Usage of the [isolate] function is used the same way as the compute function
+/// The [compute] function is used the same way as the compute function
 /// in the Flutter library.
 ///
 /// The following code is similar to the example from Flutter's compute
@@ -69,12 +69,11 @@ sealed class IsolateGetter {
 /// ```dart
 /// void main() async {
 ///   final statefulIsolate = StatefulIsolate();
-///   final computation = statefulIsolate.isolate;
-///   print(await computation(_isPrime, 7));
-///   print(await computation(_isPrime, 42));
-///   print(await computation(_isPrime, 50));
-///   print(await computation(_parseBool, false));
-///   print(await computation(_isPrime, 70));
+///   print(await statefulIsolate.compute(_isPrime, 7));
+///   print(await statefulIsolate.compute(_isPrime, 42));
+///   print(await statefulIsolate.compute(_isPrime, 50));
+///   print(await statefulIsolate.compute(_parseBool, false));
+///   print(await statefulIsolate.compute(_isPrime, 70));
 ///   statefulIsolate.dispose();
 /// }
 ///
@@ -125,7 +124,7 @@ class StatefulIsolate with IsolateBase implements IsolateGetter {
   /// long running thread and allows running in a pure Dart environment.
   @override
   @mustCallSuper
-  Future<R> isolate<Q, R>(
+  Future<R> compute<Q, R>(
     IsolateCallback<Q, R> callback,
     Q message, {
     String? debugLabel,
@@ -148,7 +147,7 @@ class StatefulIsolate with IsolateBase implements IsolateGetter {
 
   @experimental
   @override
-  Stream<R> isolateStream<Q, R>(
+  Stream<R> computeStream<Q, R>(
     IsolateStream<Q, R> callback,
     Q message, {
     String? debugLabel,

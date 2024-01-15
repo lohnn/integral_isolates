@@ -2,17 +2,32 @@ name: integral_isolates
 
 packages:
   - packages/*
+  - packages/*/example
 
 command:
   version:
     # Additionally build a changelog at the root of the workspace.
     workspaceChangelog: true
   bootstrap:
+    environment:
+      sdk: ">=3.0.0 <4.0.0"
+      flutter: ">=3.0.0"
+    dependencies:
+      async: ^2.11.0
+      flutter:
+        sdk: flutter
+      flutter_hooks: ^0.20.4
+      meta: ^1.9.1
+    dev_dependencies:
+      flutter_test:
+        sdk: flutter
+      lint: ^2.3.0
+      test: ^1.25.0
     usePubspecOverrides: true
 
 scripts:
   analyze:
-    run: melos exec -c 1 -- flutter analyze --fatal-infos
+    run: melos exec -- flutter analyze --fatal-infos
     description: Run `flutter analyze` for all packages.
 
   doc:
@@ -24,7 +39,7 @@ scripts:
     description: Run `flutter format` for all packages.
 
   test:select:
-    run: melos exec -c 1 -- dart test
+    run: melos exec -- dart test
     description: Run `flutter test` for selected packages.
     select-package:
       dir-exists:

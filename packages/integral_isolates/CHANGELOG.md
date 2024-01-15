@@ -1,3 +1,12 @@
+## 0.5.0
+
+> Note: This release has breaking changes.
+
+ - **REFACTOR**: code cleanup and small internal refactor (#27).
+ - **DOCS**: Slightly improved documentation of integral_isolates (#40).
+ - **BREAKING** **REFACTOR**: Computation functions are now renamed to `compute` and `computeIsolate` (#37).
+ - **BREAKING** **FEAT**(19): hooks stream and tailored isolate support added (#39).
+
 ## 0.4.1
 
  - **FEAT**: isolate stream (#18).

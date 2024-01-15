@@ -5,9 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:integral_isolates/integral_isolates.dart';
 
-export 'package:integral_isolates/integral_isolates.dart';
-
-/// A hook that exposes a typed computation function using a long living isolate.
+/// A hook that exposes a [TailoredStatefulIsolate].
 ///
 /// The hook allows for overriding the default backpressure strategy by setting
 /// [backpressureStrategy].
@@ -26,7 +24,7 @@ export 'package:integral_isolates/integral_isolates.dart';
 ///
 ///     return TextButton(
 ///       onPressed: () async {
-///         var isPrime = await isolate(_isPrime, number.value);
+///         var isPrime = await isolate.compute(_isPrime, number.value);
 ///         print('${number.value} is a prime number? ${isPrime}');
 ///         number.value += 1;
 ///       },
@@ -49,10 +47,10 @@ export 'package:integral_isolates/integral_isolates.dart';
 ///   }
 /// }
 /// ```
-TailoredIsolateComputeImpl<Q, R> useTailoredIsolate<Q, R>({
+TailoredStatefulIsolate<Q, R> useTailoredIsolate<Q, R>({
   BackpressureStrategy<Q, R>? backpressureStrategy,
 }) {
-  return use(_IsolateHook<Q, R>(backpressureStrategy)).isolate;
+  return use(_IsolateHook<Q, R>(backpressureStrategy));
 }
 
 class _IsolateHook<Q, R> extends Hook<TailoredStatefulIsolate<Q, R>> {

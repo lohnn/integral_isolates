@@ -5,9 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:integral_isolates/integral_isolates.dart';
 
-export 'package:integral_isolates/integral_isolates.dart';
-
-/// A hook that exposes a computation function using a long living isolate.
+/// A hook that exposes a [StatefulIsolate].
 ///
 /// The hook allows for overriding the default backpressure strategy by setting
 /// [backpressureStrategy].
@@ -26,7 +24,7 @@ export 'package:integral_isolates/integral_isolates.dart';
 ///
 ///     return TextButton(
 ///       onPressed: () async {
-///         var isPrime = await isolate(_isPrime, number.value);
+///         var isPrime = await isolate.compute(_isPrime, number.value);
 ///         print('${number.value} is a prime number? ${isPrime}');
 ///         number.value += 1;
 ///       },
@@ -49,11 +47,11 @@ export 'package:integral_isolates/integral_isolates.dart';
 ///   }
 /// }
 /// ```
-IsolateComputeImpl useIsolate({BackpressureStrategy? backpressureStrategy}) {
+StatefulIsolate useIsolate({BackpressureStrategy? backpressureStrategy}) {
   return use(_IsolateHook(backpressureStrategy));
 }
 
-class _IsolateHook extends Hook<IsolateComputeImpl> {
+class _IsolateHook extends Hook<StatefulIsolate> {
   final BackpressureStrategy? backpressureStrategy;
 
   const _IsolateHook(this.backpressureStrategy);
@@ -62,12 +60,12 @@ class _IsolateHook extends Hook<IsolateComputeImpl> {
   _IsolateHookState createState() => _IsolateHookState();
 }
 
-class _IsolateHookState extends HookState<IsolateComputeImpl, _IsolateHook> {
-  late final StatefulIsolate _isolated;
+class _IsolateHookState extends HookState<StatefulIsolate, _IsolateHook> {
+  late final StatefulIsolate _isolate;
 
   @override
   Future initHook() async {
-    _isolated = StatefulIsolate(
+    _isolate = StatefulIsolate(
       backpressureStrategy:
           hook.backpressureStrategy ?? NoBackPressureStrategy(),
     );
@@ -75,10 +73,10 @@ class _IsolateHookState extends HookState<IsolateComputeImpl, _IsolateHook> {
 
   @override
   void dispose() {
-    _isolated.dispose();
+    _isolate.dispose();
     super.dispose();
   }
 
   @override
-  IsolateComputeImpl build(BuildContext context) => _isolated.isolate;
+  StatefulIsolate build(BuildContext context) => _isolate;
 }

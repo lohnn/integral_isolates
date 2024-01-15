@@ -5,37 +5,36 @@ import 'package:test/test.dart';
 
 void main() {
   group('Exceptions when queuing jobs should not break upcoming jobs', () {
-    final isolated = StatefulIsolate();
-    final isolate = isolated.isolate;
+    final isolate = StatefulIsolate();
 
     test('Send different data types and expect answers', () async {
       expect(
-        await isolate((number) => number + 2, 1),
-        equals(3),
+        isolate.compute((number) => number + 2, 1),
+        completion(3),
       );
 
       expect(
-        await isolate((text) => 'prefix: $text', 'testing'),
-        equals('prefix: testing'),
+        isolate.compute((text) => 'prefix: $text', 'testing'),
+        completion('prefix: testing'),
       );
     });
 
     test('Send unsupported data type should throw exception', () async {
       expect(
-        await isolate((number) => number + 2, 1),
+        await isolate.compute((number) => number + 2, 1),
         equals(3),
       );
 
       expectLater(
-        isolate(
-          print,
+        isolate.compute(
+          (_) {},
           ReceivePort(),
         ),
         throwsArgumentError,
       );
 
       expect(
-        await isolate((number) => number + 2, 5),
+        await isolate.compute((number) => number + 2, 5),
         equals(7),
       );
     });
@@ -43,12 +42,12 @@ void main() {
     test('Trying to return unsupported data type should throw exception',
         () async {
       expect(
-        await isolate((number) => number + 8, 1),
+        await isolate.compute((number) => number + 8, 1),
         equals(9),
       );
 
       expectLater(
-        isolate(
+        isolate.compute(
           (_) {
             return ReceivePort();
           },
@@ -58,11 +57,11 @@ void main() {
       );
 
       expect(
-        await isolate((number) => number + 5, 25),
+        await isolate.compute((number) => number + 5, 25),
         equals(30),
       );
     });
 
-    tearDownAll(isolated.dispose);
+    tearDownAll(isolate.dispose);
   });
 }
