@@ -1,4 +1,12 @@
-Easy to use isolates for Dart and Flutter.
+<div style="text-align: center;">
+    <img src="https://github.com/lohnn/integral_isolates/blob/main/packages/integral_isolates/resources/icon.png?raw=true" width="200" alt="Integral Isolates" />
+    <p>Easy to use isolates for Dart and Flutter.</p>
+    <a title="Pub" href="https://pub.dev/packages/integral_isolates"><img src="https://img.shields.io/pub/v/integral_isolates.svg?style=popout"/></a>
+    <a title="Test" href="https://github.com/lohnn/integral_isolates/actions?query=workflow%3Acicd+branch%3Amain"><img src="https://github.com/lohnn/integral_isolates/workflows/cicd/badge.svg?branch=main&event=push"/></a>
+    <a title="Melos" href="https://github.com/invertase/melos"><img src="https://img.shields.io/badge/maintained%20with-melos-f700ff.svg"/></a>
+</div>
+
+
 
 ## Usage
 
