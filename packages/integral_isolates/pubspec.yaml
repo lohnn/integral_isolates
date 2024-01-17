@@ -1,6 +1,6 @@
 name: integral_isolates
 description: The power of Dart's compute function, but using a long lived isolate.
-version: 0.5.0
+version: 0.5.1
 repository: https://github.com/lohnn/integral_isolates
 screenshots:
   - description: The integral_isolates logo.
