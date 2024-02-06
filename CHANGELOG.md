@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2024-01-17
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
+ - [`integral_isolates` - `v0.5.1`](#integral_isolates---v051)
+ - [`use_isolate` - `v0.3.0+1`](#use_isolate---v0301)
+
+Packages with dependency updates only:
+
+> Packages listed below depend on other packages in this workspace that have had changes. Their versions have been incremented to bump the minimum dependency versions of the packages they depend upon in this project.
+
+ - `use_isolate` - `v0.3.0+1`
+
+---
+
+#### `integral_isolates` - `v0.5.1`
+
+ - **FEAT**: Made IsolatGetter and TailoredIsolateGetter publicly overridable again (#42).
+
+
 ## 2023-12-29
 
 ### Changes

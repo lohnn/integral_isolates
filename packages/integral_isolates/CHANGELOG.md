@@ -1,3 +1,7 @@
+## 0.5.1
+
+ - **FEAT**: Made IsolatGetter and TailoredIsolateGetter publicly overridable again (#42).
+
 ## 0.5.0
 
 > Note: This release has breaking changes.

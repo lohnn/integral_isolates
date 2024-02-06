@@ -11,8 +11,8 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_hooks: ^0.20.4
-  integral_isolates: ^0.5.0
-  use_isolate: ^0.3.0
+  integral_isolates: ^0.5.1
+  use_isolate: ^0.3.0+1
   shared_preferences: ^2.2.2
 
 dev_dependencies:

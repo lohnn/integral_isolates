@@ -30,7 +30,7 @@ typedef IsolateStreamComputeImpl = Future<R> Function<Q, R>(
 ///
 /// Useful when wrapping the functionality and just want to expose the
 /// computation functions.
-sealed class IsolateGetter {
+abstract class IsolateGetter {
   /// The compute function, used in the same way as Flutter's
   /// compute function, but for a long lived isolate.
   Future<R> compute<Q, R>(
