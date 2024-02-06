@@ -1,0 +1,21 @@
+name: flutter_integral_isolates
+description: "Wrapper for integral_isolates that sets up platform support in StatefulIsolates for Flutter apps."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  integral_isolates: ^0.5.1
+  shared_preferences: ^2.2.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  lint: ^2.3.0
+
+flutter:
+  uses-material-design: true
