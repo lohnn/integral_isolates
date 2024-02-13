@@ -1,1 +1,1 @@
-export 'package:integral_isolates/integral_isolates.dart';
+export 'package:flutter_integral_isolates/src/stateful_isolate.dart';

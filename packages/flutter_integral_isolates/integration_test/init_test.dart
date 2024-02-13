@@ -1,12 +1,7 @@
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_integral_isolates/flutter_integral_isolates.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-void _initPluginForIsolate(RootIsolateToken rootIsolateToken) {
-  BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);
-}
 
 Future<String?> _readSharedPreferences(Object? _) async {
   final sharedPreferences = await SharedPreferences.getInstance();
@@ -35,8 +30,8 @@ void main() {
         await tester.pumpWidget(Container());
         final isolate = StatefulIsolate();
 
-        final rootIsolateToken = RootIsolateToken.instance!;
-        await isolate.compute(_initPluginForIsolate, rootIsolateToken);
+        // final rootIsolateToken = RootIsolateToken.instance!;
+        // await isolate.compute(_initPluginForIsolate, rootIsolateToken);
 
         await expectLater(
           isolate.compute(

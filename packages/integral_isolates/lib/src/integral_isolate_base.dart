@@ -1,5 +1,3 @@
-// ignore_for_file: public_member_api_docs
-
 import 'dart:async';
 import 'dart:developer';
 import 'dart:isolate';
@@ -21,6 +19,8 @@ mixin IsolateBase<Q, R> {
   /// backpressureStrategy.
   BackpressureStrategy<Q, R> get backpressureStrategy;
 
+  InitThingie<Object>? postInit() => null;
+
   /// Initializes the isolate for use.
   ///
   /// It is fine to call this function more than once, initialization will only
@@ -31,10 +31,14 @@ mixin IsolateBase<Q, R> {
     _initCompleter = Completer<void>();
 
     final isolateToMainPort = ReceivePort();
+    final setupConfiguration = IsolateSetupConfiguration(
+      isolateToMainPort.sendPort,
+      extraInit: postInit(),
+    );
     _isolateToMainPort = StreamQueue(isolateToMainPort);
     await Isolate.spawn(
       _isolate,
-      isolateToMainPort.sendPort,
+      setupConfiguration,
     );
 
     final isolateSetupResponse =
@@ -42,7 +46,7 @@ mixin IsolateBase<Q, R> {
     _mainToIsolatePort = isolateSetupResponse.mainToIsolatePort;
     _closePort = isolateSetupResponse.closePort;
 
-    handleIsolateCall();
+    _handleIsolateCall();
     _initCompleter!.complete();
   }
 
@@ -55,15 +59,14 @@ mixin IsolateBase<Q, R> {
   ) {
     final Flow flow = Flow.begin();
     backpressureStrategy.add(createBackpressureConfiguration(flow));
-    handleIsolateCall();
+    _handleIsolateCall();
   }
 
   /// If the worker is currently running, this bool will be set to true
   bool _isRunning = false;
   bool _disposed = false;
 
-  @internal
-  Future handleIsolateCall() async {
+  Future _handleIsolateCall() async {
     if (_initCompleter == null) {
       throw InitException();
     } else if (!_initCompleter!.isCompleted) {
@@ -86,7 +89,7 @@ mixin IsolateBase<Q, R> {
         configuration.closeError(e, stackTrace);
       }
       _isRunning = false;
-      handleIsolateCall();
+      _handleIsolateCall();
     }
   }
 
@@ -95,7 +98,8 @@ mixin IsolateBase<Q, R> {
   /// This function should always be called when you are done with the isolate
   /// to not leak memory and isolates.
   ///
-  /// After this function is called, you cannot continue using the isolate.
+  /// After this function is called, trying to use the isolate will throw a
+  /// [IsolateClosedDropException].
   @mustCallSuper
   Future dispose() async {
     _disposed = true;
@@ -105,9 +109,16 @@ mixin IsolateBase<Q, R> {
   }
 }
 
-Future _isolate(SendPort isolateToMainPort) async {
+Future _isolate(IsolateSetupConfiguration setupConfiguration) async {
   final mainToIsolateStream = ReceivePort();
   final closePort = ReceivePort();
+
+  if ((setupConfiguration.callback, setupConfiguration.message)
+      case (final callback?, final message)) {
+    await callback(message);
+  }
+
+  final isolateToMainPort = setupConfiguration.isolateToMainPort;
 
   isolateToMainPort.send(
     _IsolateSetupResponse(
@@ -162,7 +173,7 @@ sealed class IsolateResponse<R> {
 }
 
 @internal
-class SuccessIsolateResponse<R> extends IsolateResponse<R> {
+final class SuccessIsolateResponse<R> extends IsolateResponse<R> {
   final R response;
 
   @internal

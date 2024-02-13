@@ -10,6 +10,25 @@ import 'package:meta/meta.dart';
 
 @internal
 @immutable
+final class IsolateSetupConfiguration<Q> {
+  IsolateSetupConfiguration(
+    this.isolateToMainPort, {
+    InitThingie<Q>? extraInit,
+  })  : message = extraInit?.message,
+        callback = extraInit?.callback;
+
+  final Q? message;
+  final IsolateCallback<Q, void>? callback;
+  final SendPort isolateToMainPort;
+
+  @override
+  String toString() {
+    return 'IsolateSetupConfiguration()';
+  }
+}
+
+@internal
+@immutable
 sealed class IsolateConfiguration<Q, R> {
   const IsolateConfiguration(
     this.message,

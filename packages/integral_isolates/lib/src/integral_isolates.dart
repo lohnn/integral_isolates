@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:integral_isolates/integral_isolates.dart';
+import 'package:meta/meta.dart';
 
 /// Signature for the callback passed to [StatefulIsolate.compute].
 ///
@@ -17,3 +18,11 @@ typedef IsolateCallback<Q, R> = FutureOr<R> Function(Q message);
 /// Instances of [IsolateStream] must be functions that can be sent to an
 /// isolate.
 typedef IsolateStream<Q, R> = Stream<R> Function(Q message);
+
+@immutable
+final class InitThingie<Q> {
+  final IsolateCallback<Q, void> callback;
+  final Q message;
+
+  const InitThingie(this.callback, this.message);
+}
