@@ -98,7 +98,7 @@ abstract class IsolateGetter {
 ///
 ///  * [TailoredStatefulIsolate], to create a long lived isolate that only takes
 ///  specific input and output types.
-class StatefulIsolate with IsolateBase implements IsolateGetter {
+class StatefulIsolate extends IsolateBase implements IsolateGetter {
   @override
   final BackpressureStrategy backpressureStrategy;
 

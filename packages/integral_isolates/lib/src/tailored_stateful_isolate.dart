@@ -96,8 +96,7 @@ abstract class TailoredIsolateGetter<Q, R> {
 ///  * [StatefulIsolate], to create a long lived isolate that has no predefined
 ///  input and output typed, but rather decides type per call to the [compute]
 ///  function.
-final class TailoredStatefulIsolate<Q, R>
-    with IsolateBase<Q, R>
+final class TailoredStatefulIsolate<Q, R> extends IsolateBase<Q, R>
     implements TailoredIsolateGetter<Q, R> {
   @override
   final BackpressureStrategy<Q, R> backpressureStrategy;

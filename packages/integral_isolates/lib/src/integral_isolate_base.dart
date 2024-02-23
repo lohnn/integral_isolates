@@ -9,7 +9,7 @@ import 'package:integral_isolates/src/isolate_configuration.dart';
 import 'package:meta/meta.dart';
 
 @internal
-mixin IsolateBase<Q, R> {
+abstract class IsolateBase<Q, R> {
   late StreamQueue _isolateToMainPort;
   late SendPort _mainToIsolatePort;
   SendPort? _closePort;
@@ -31,9 +31,10 @@ mixin IsolateBase<Q, R> {
     _initCompleter = Completer<void>();
 
     final isolateToMainPort = ReceivePort();
+    final postInit = this.postInit();
     final setupConfiguration = IsolateSetupConfiguration(
       isolateToMainPort.sendPort,
-      extraInit: postInit(),
+      extraInit: postInit,
     );
     _isolateToMainPort = StreamQueue(isolateToMainPort);
     await Isolate.spawn(
@@ -45,6 +46,18 @@ mixin IsolateBase<Q, R> {
         await _isolateToMainPort.next as _IsolateSetupResponse;
     _mainToIsolatePort = isolateSetupResponse.mainToIsolatePort;
     _closePort = isolateSetupResponse.closePort;
+
+    if (postInit != null) {
+      final postInitResponse =
+          await _isolateToMainPort.next as _IsolateInitResponse;
+      if (postInitResponse is _IsolateInitFailureResponse) {
+        _initCompleter!.completeError(
+          postInitResponse.error,
+          postInitResponse.stackTrace,
+        );
+        return;
+      }
+    }
 
     _handleIsolateCall();
     _initCompleter!.complete();
@@ -113,11 +126,6 @@ Future _isolate(IsolateSetupConfiguration setupConfiguration) async {
   final mainToIsolateStream = ReceivePort();
   final closePort = ReceivePort();
 
-  if ((setupConfiguration.callback, setupConfiguration.message)
-      case (final callback?, final message)) {
-    await callback(message);
-  }
-
   final isolateToMainPort = setupConfiguration.isolateToMainPort;
 
   isolateToMainPort.send(
@@ -126,6 +134,17 @@ Future _isolate(IsolateSetupConfiguration setupConfiguration) async {
       closePort.sendPort,
     ),
   );
+
+  // Try run postInit and respond accordingly
+  try {
+    if ((setupConfiguration.callback, setupConfiguration.message)
+        case (final initCallback?, final message)) {
+      await initCallback(message);
+      isolateToMainPort.send(const _IsolateInitSuccessResponse());
+    }
+  } catch (e, stackTrace) {
+    isolateToMainPort.send(_IsolateInitFailureResponse(e, stackTrace));
+  }
 
   closePort.first.then((_) {
     mainToIsolateStream.close();
@@ -157,6 +176,21 @@ final class _IsolateSetupResponse {
 
   final SendPort mainToIsolatePort;
   final SendPort closePort;
+}
+
+sealed class _IsolateInitResponse {
+  const _IsolateInitResponse();
+}
+
+final class _IsolateInitSuccessResponse extends _IsolateInitResponse {
+  const _IsolateInitSuccessResponse();
+}
+
+final class _IsolateInitFailureResponse extends _IsolateInitResponse {
+  final Object error;
+  final StackTrace stackTrace;
+
+  const _IsolateInitFailureResponse(this.error, this.stackTrace);
 }
 
 @internal
