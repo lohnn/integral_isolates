@@ -8,8 +8,14 @@ import 'package:integral_isolates/src/backpressure/backpressure_strategy.dart';
 import 'package:integral_isolates/src/isolate_configuration.dart';
 import 'package:meta/meta.dart';
 
+abstract class PostInitStuff<T> {
+  @internal
+  InitThingie<T>? postInit() => null;
+}
+
 @internal
-abstract class IsolateBase<Q, R> {
+abstract class IsolateBase<Q, R, PostInitType>
+    extends PostInitStuff<PostInitType> {
   late StreamQueue _isolateToMainPort;
   late SendPort _mainToIsolatePort;
   SendPort? _closePort;
@@ -18,8 +24,6 @@ abstract class IsolateBase<Q, R> {
   /// Implementations of [StatefulIsolate] has to override this to specify a
   /// backpressureStrategy.
   BackpressureStrategy<Q, R> get backpressureStrategy;
-
-  InitThingie<Object>? postInit() => null;
 
   /// Initializes the isolate for use.
   ///
@@ -51,6 +55,7 @@ abstract class IsolateBase<Q, R> {
       final postInitResponse =
           await _isolateToMainPort.next as _IsolateInitResponse;
       if (postInitResponse is _IsolateInitFailureResponse) {
+        // TODO(lohnn): before release - maybe better logging telling user that it failed on postInit?
         _initCompleter!.completeError(
           postInitResponse.error,
           postInitResponse.stackTrace,

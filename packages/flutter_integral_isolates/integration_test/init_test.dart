@@ -28,7 +28,8 @@ void main() {
     (tester) async {
       await tester.runAsync(() async {
         await tester.pumpWidget(Container());
-        final isolate = StatefulIsolate();
+        final isolate = StatefulIsolate(autoInit: false);
+        await isolate.init();
 
         // final rootIsolateToken = RootIsolateToken.instance!;
         // await isolate.compute(_initPluginForIsolate, rootIsolateToken);
