@@ -4,7 +4,7 @@ import 'package:integral_isolates/integral_isolates.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('IsolateStream tests', () {
+  group('Receiving streams from Isolate', () {
     final isolate = StatefulIsolate();
 
     test('Send different data types and expect answers', () async {
@@ -80,6 +80,53 @@ void main() {
           const Object(),
         ),
         emitsInOrder([2, 3, 5, 42]),
+      );
+    });
+
+    tearDownAll(isolate.dispose);
+  });
+
+  group('Sending Stream to isolate', () {
+    final isolate = StatefulIsolate();
+
+    test('Send Future and expect answers', () async {
+      expectLater(
+        isolate.compute(
+          (input) async {
+            return (await input) + 1;
+          },
+          Future.value(2),
+        ),
+        completion(3),
+      );
+    });
+
+    test('Send Stream and expect answers', () async {
+      expectLater(
+        isolate.computeStream(
+          (inputs) async* {
+            await for (final input in inputs) {
+              yield input + 1;
+            }
+          },
+          Stream.fromIterable([2, 3, 5, 42]),
+        ),
+        emitsInOrder([3, 4, 6, 43]),
+      );
+
+      expectLater(
+        isolate.computeStream(
+          (_) => Stream.fromFutures([
+            Future.delayed(const Duration(milliseconds: 100), () => 'are'),
+            Future.value('Async calls'),
+            Future.delayed(
+              const Duration(milliseconds: 200),
+              () => 'difficult',
+            ),
+          ]),
+          const Object(),
+        ),
+        emitsInOrder(['Async calls', 'are', 'difficult']),
       );
     });
 
