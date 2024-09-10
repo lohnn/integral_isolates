@@ -31,14 +31,14 @@ void main() {
         await Future.delayed(Duration(milliseconds: 50 * delayMultiplier++));
         if (input is String) {
           try {
-            final value = await isolate.compute(_testFunctionStr, input);
+            final value = await isolate.run(() => _testFunctionStr(input));
             responses.add(value);
           } catch (e) {
             // Noop
           }
         } else if (input is int) {
           try {
-            final value = await isolate.compute(_testFunction, input);
+            final value = await isolate.run(() => _testFunction(input));
             responses.add(value);
           } catch (e) {
             // Noop
@@ -62,9 +62,9 @@ void main() {
       await Future.wait([
         for (final input in iterable())
           if (input is String)
-            isolate.compute(_testFunctionStr, input).then(responses.add)
+            isolate.run(() => _testFunctionStr(input)).then(responses.add)
           else if (input is int)
-            isolate.compute(_testFunction, input).then(responses.add),
+            isolate.run(() => _testFunction(input)).then(responses.add),
       ]);
 
       isolate.dispose();
@@ -91,16 +91,6 @@ void main() {
         runIsolate(ReplaceBackpressureStrategy()),
         completion([1, 5]),
       );
-    });
-
-    test('Combine backpressure strategy', () async {
-      final future = runIsolate(
-        CombineBackPressureStrategy((oldData, newData) {
-          if (oldData is num && newData is num) return oldData + newData;
-          return newData;
-        }),
-      );
-      expect(future, completion([1, 14]));
     });
   });
 }

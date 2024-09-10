@@ -3,15 +3,15 @@ import 'dart:async';
 import 'package:integral_isolates/src/backpressure/backpressure_strategy.dart';
 
 /// Mixin to help out with a queue of one size for [BackpressureStrategy].
-mixin OneSizedQueue<R> on BackpressureStrategy<R> {
+mixin TailoredOneSizedQueue<Q, R> on TailoredBackpressureStrategy<Q, R> {
   /// The next item in queue for execution.
-  BackpressureConfiguration<R>? queue;
+  TailoredBackpressureConfiguration<Q, R>? queue;
 
   @override
   bool hasNext() => queue != null;
 
   @override
-  BackpressureConfiguration<R> takeNext() {
+  TailoredBackpressureConfiguration<Q, R> takeNext() {
     final toReturn = queue!;
     queue = null;
     return toReturn;

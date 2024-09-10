@@ -11,7 +11,7 @@ import 'package:integral_isolates/src/isolate_configuration.dart';
 import 'package:meta/meta.dart';
 
 @internal
-mixin IsolateBase<Q, R> {
+mixin IsolateBase<R> {
   late StreamQueue _isolateToMainPort;
   late SendPort _mainToIsolatePort;
   SendPort? _closePort;
@@ -19,7 +19,7 @@ mixin IsolateBase<Q, R> {
 
   /// Implementations of [StatefulIsolate] has to override this to specify a
   /// backpressureStrategy.
-  BackpressureStrategy<Q, R> get backpressureStrategy;
+  BaseBackpressureStrategy<R> get backpressureStrategy;
 
   /// Initializes the isolate for use.
   ///
@@ -50,7 +50,7 @@ mixin IsolateBase<Q, R> {
   /// queue and start running the queue.
   @internal
   void addIsolateCall(
-    BackpressureConfiguration<Q, R> Function(Flow flow)
+    BackpressureConfiguration<R> Function(Flow flow)
         createBackpressureConfiguration,
   ) {
     final Flow flow = Flow.begin();

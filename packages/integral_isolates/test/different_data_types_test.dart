@@ -9,7 +9,7 @@ void main() {
 
     test('Send different data types and expect answers', () async {
       expect(
-        isolate.compute((number) => number + 2, 1),
+        isolate.run(() => 1 + 2),
         completion(3),
       );
 

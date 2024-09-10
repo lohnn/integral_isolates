@@ -11,11 +11,11 @@ import 'package:integral_isolates/src/backpressure/backpressure_strategy.dart';
 /// --a---b---c---d---e---f---------------|
 ///
 /// ------a-----b-----c-----d-----e-----f-|
-class NoBackPressureStrategy<Q, R> extends BackpressureStrategy<Q, R> {
-  final List<BackpressureConfiguration<Q, R>> _backstack = [];
+class NoBackPressureStrategy<R> extends BackpressureStrategy<R> {
+  final List<BackpressureConfiguration<R>> _backstack = [];
 
   @override
-  void add(BackpressureConfiguration<Q, R> configuration) {
+  void add(BackpressureConfiguration<R> configuration) {
     _backstack.add(configuration);
   }
 
@@ -25,7 +25,7 @@ class NoBackPressureStrategy<Q, R> extends BackpressureStrategy<Q, R> {
   }
 
   @override
-  BackpressureConfiguration<Q, R> takeNext() {
+  BackpressureConfiguration<R> takeNext() {
     return _backstack.removeAt(0);
   }
 

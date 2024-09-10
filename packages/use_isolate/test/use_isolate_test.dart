@@ -100,7 +100,7 @@ void main() {
       );
 
       await expectLater(
-        isolate.computeStream(
+        isolate.stream(
           (input) =>
               Stream.fromIterable(Iterable.generate(4, (i) => '$input$i')),
           'message',

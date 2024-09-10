@@ -1,5 +1,5 @@
 import 'package:integral_isolates/src/backpressure/backpressure_strategy.dart';
-import 'package:integral_isolates/src/backpressure/mixins/one_sized_queue.dart';
+import 'package:integral_isolates/src/backpressure/mixins/tailored_one_sized_queue.dart';
 
 /// An implementation of [BackpressureStrategy] that allows for manual merge of
 /// input data for calls to the isolate function.
@@ -22,8 +22,8 @@ import 'package:integral_isolates/src/backpressure/mixins/one_sized_queue.dart';
 /// --a--b--c---d--e--f-g---------|
 ///
 /// ---------a-b*c-------d--e*f*g-|
-class CombineBackPressureStrategy<Q, R> extends BackpressureStrategy<Q, R>
-    with OneSizedQueue {
+class CombineBackPressureStrategy<Q, R>
+    extends TailoredBackpressureStrategy<Q, R> with TailoredOneSizedQueue {
   final Q Function(
     Q oldData,
     Q newData,
@@ -38,7 +38,7 @@ class CombineBackPressureStrategy<Q, R> extends BackpressureStrategy<Q, R>
   CombineBackPressureStrategy(this._combineFunction);
 
   @override
-  void add(BackpressureConfiguration<Q, R> configuration) {
+  void add(TailoredBackpressureConfiguration<Q, R> configuration) {
     if (hasNext()) {
       final queuedConfiguration = takeNext();
       drop(queuedConfiguration);

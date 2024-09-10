@@ -13,7 +13,7 @@ void main() {
     List<int> iterable() => [1, 2, 3, 4, 5].toList();
 
     Future<List<int>> runIsolate(
-      BackpressureStrategy<int, int> strategy,
+      BaseBackpressureStrategy<int> strategy,
     ) async {
       final isolate = TailoredStatefulIsolate<int, int>(
         backpressureStrategy: strategy,
@@ -44,7 +44,7 @@ void main() {
     }
 
     test('Default (no) strategy', () async {
-      final isolate = StatefulIsolate();
+      final isolate = TailoredStatefulIsolate<int, int>();
       final responses = <int>[];
 
       await Future.wait([
@@ -80,7 +80,7 @@ void main() {
 
     test('Combine backpressure strategy', () async {
       final isolate = TailoredStatefulIsolate<int, int>(
-        backpressureStrategy: CombineBackPressureStrategy(
+        backpressureStrategy: CombineBackPressureStrategy<int, int>(
           (oldData, newData) => oldData + newData,
         ),
       );
@@ -91,7 +91,7 @@ void main() {
           return oldData + newData;
         }),
       );
-       expect(
+      expect(
         future,
         completion([1, 14]),
       );

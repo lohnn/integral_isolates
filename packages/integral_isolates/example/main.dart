@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:integral_isolates/integral_isolates.dart';
 
 void main() async {
-  final isolated = StatefulIsolate();
+  final isolate = StatefulIsolate();
 
   /// Function that halts the thread while looping and printing.
   Future<void> threadSleepComputation(int input) async {
@@ -22,7 +22,7 @@ void main() async {
       const Duration(milliseconds: 100),
       () => threadSleepComputation(1),
     ),
-    isolated.compute(leibnizPi, 500000000),
+    isolate.run(() => leibnizPi(500000000)),
     Future.delayed(
       const Duration(milliseconds: 100),
       () => threadSleepComputation(2),
@@ -31,7 +31,7 @@ void main() async {
 
   print(pi);
 
-  isolated.dispose();
+  isolate.dispose();
 }
 
 /// Calculate PI and prints to log when done

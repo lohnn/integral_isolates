@@ -16,7 +16,7 @@ import 'package:meta/meta.dart';
 ///
 /// [R] is the response type.
 typedef TailoredIsolateComputeImpl<Q, R> = Future<R> Function(
-  IsolateCallback<Q, R> callback,
+  IsolateComputeCallback<Q, R> callback,
   Q message, {
   String? debugLabel,
 });
@@ -30,7 +30,7 @@ abstract class TailoredIsolateGetter<Q, R> {
   /// The computation function, a function used the same way as Flutter's
   /// compute function, but for a long lived isolate.
   Future<R> compute(
-    IsolateCallback<Q, R> callback,
+    IsolateComputeCallback<Q, R> callback,
     Q message, {
     String? debugLabel,
   });
@@ -44,7 +44,7 @@ abstract class TailoredIsolateGetter<Q, R> {
   /// isolate.
   @experimental
   Stream<R> computeStream(
-    IsolateStream<Q, R> callback,
+    TailoredIsolateStream<Q, R> callback,
     Q message, {
     String? debugLabel,
   });
@@ -97,10 +97,10 @@ abstract class TailoredIsolateGetter<Q, R> {
 ///  input and output typed, but rather decides type per call to the [compute]
 ///  function.
 final class TailoredStatefulIsolate<Q, R>
-    with IsolateBase<Q, R>
+    with IsolateBase<R>
     implements TailoredIsolateGetter<Q, R> {
   @override
-  final BackpressureStrategy<Q, R> backpressureStrategy;
+  final BaseBackpressureStrategy<R> backpressureStrategy;
 
   /// Creates a minimal isolate that requires a specific input type [Q], and
   /// that can only be used with functions returning type [R]
@@ -112,7 +112,7 @@ final class TailoredStatefulIsolate<Q, R>
   /// If [autoInit] is set to false, you have to call function [init] before
   /// starting to use the isolate.
   TailoredStatefulIsolate({
-    BackpressureStrategy<Q, R>? backpressureStrategy,
+    BaseBackpressureStrategy<R>? backpressureStrategy,
     bool autoInit = true,
   }) : backpressureStrategy = backpressureStrategy ?? NoBackPressureStrategy() {
     if (autoInit) init();
@@ -120,20 +120,20 @@ final class TailoredStatefulIsolate<Q, R>
 
   @override
   Future<R> compute(
-    IsolateCallback<Q, R> callback,
+    IsolateComputeCallback<Q, R> callback,
     Q message, {
     String? debugLabel,
   }) {
     final completer = Completer<R>();
 
     addIsolateCall((flow) {
-      final isolateConfiguration = FutureIsolateConfiguration(
+      final isolateConfiguration = FutureIsolateComputeConfiguration(
         callback,
         message,
         debugLabel,
         flow.id,
       );
-      return FutureBackpressureConfiguration(
+      return FutureBackpressureRunConfiguration(
         completer,
         isolateConfiguration,
       );
@@ -145,7 +145,7 @@ final class TailoredStatefulIsolate<Q, R>
   @experimental
   @override
   Stream<R> computeStream(
-    IsolateStream<Q, R> callback,
+    TailoredIsolateStream<Q, R> callback,
     Q message, {
     String? debugLabel,
   }) {
@@ -155,7 +155,7 @@ final class TailoredStatefulIsolate<Q, R>
     final streamController = StreamController<R>();
 
     addIsolateCall((flow) {
-      final isolateConfiguration = StreamIsolateConfiguration(
+      final isolateConfiguration = TailoredStreamIsolateConfiguration(
         callback,
         message,
         debugLabel,

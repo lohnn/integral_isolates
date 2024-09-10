@@ -9,10 +9,10 @@ import 'package:integral_isolates/src/backpressure/mixins/one_sized_queue.dart';
 /// --a---b---c---d---e---f--|
 ///
 /// -----a-----b-----d-----e-|
-class DiscardNewBackPressureStrategy<Q, R> extends BackpressureStrategy<Q, R>
-    with OneSizedQueue<Q, R> {
+class DiscardNewBackPressureStrategy<R> extends BackpressureStrategy<R>
+    with OneSizedQueue<R> {
   @override
-  void add(BackpressureConfiguration<Q, R> configuration) {
+  void add(BackpressureConfiguration<R> configuration) {
     if (hasNext()) {
       drop(configuration);
     } else {

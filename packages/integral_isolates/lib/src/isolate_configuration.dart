@@ -10,23 +10,18 @@ import 'package:meta/meta.dart';
 
 @internal
 @immutable
-sealed class IsolateConfiguration<Q, R> {
+sealed class IsolateConfiguration<R> {
   const IsolateConfiguration(
-    this.message,
     String? debugLabel,
     this.flowId,
   ) : debugLabel = debugLabel ?? 'compute';
 
-  final Q message;
   final String debugLabel;
   final int flowId;
-
-  IsolateConfiguration<Q, R> copyWith({required Q message});
 
   @override
   String toString() {
     return 'IsolateConfiguration('
-        'message: $message, '
         'debugLabel: $debugLabel, '
         'flowId: $flowId'
         ')';
@@ -38,16 +33,55 @@ sealed class IsolateConfiguration<Q, R> {
   Future<void> handleCall(SendPort isolateToMainPort);
 }
 
-final class FutureIsolateConfiguration<Q, R>
-    extends IsolateConfiguration<Q, R> {
-  const FutureIsolateConfiguration(
+final class FutureIsolateRunConfiguration<Q, R>
+    extends IsolateConfiguration<R> {
+  const FutureIsolateRunConfiguration(
+    this.computation,
+    super.debugLabel,
+    super.flowId,
+  );
+
+  final IsolateRunCallback<R> computation;
+
+  FutureOr<R> applyAndTime() {
+    return Timeline.timeSync(
+      debugLabel,
+      computation,
+      flow: Flow.step(flowId),
+    );
+  }
+
+  @override
+  Future<void> handleCall(SendPort isolateToMainPort) async {
+    isolateToMainPort.send(
+      SuccessIsolateResponse(flowId, await applyAndTime()),
+    );
+  }
+}
+
+sealed class TailoredIsolateConfiguration<Q, R>
+    extends IsolateConfiguration<R> {
+  const TailoredIsolateConfiguration(
+    this.message,
+    super.debugLabel,
+    super.flowId,
+  );
+
+  final Q message;
+
+  TailoredIsolateConfiguration<Q, R> copyWith({required Q message});
+}
+
+final class FutureIsolateComputeConfiguration<Q, R>
+    extends TailoredIsolateConfiguration<Q, R> {
+  const FutureIsolateComputeConfiguration(
     this.callback,
     super.message,
     super.debugLabel,
     super.flowId,
   );
 
-  final IsolateCallback<Q, R> callback;
+  final IsolateComputeCallback<Q, R> callback;
 
   FutureOr<R> applyAndTime() {
     return Timeline.timeSync(
@@ -58,8 +92,8 @@ final class FutureIsolateConfiguration<Q, R>
   }
 
   @override
-  IsolateConfiguration<Q, R> copyWith({required Q message}) {
-    return FutureIsolateConfiguration(
+  TailoredIsolateConfiguration<Q, R> copyWith({required Q message}) {
+    return FutureIsolateComputeConfiguration(
       callback,
       message,
       debugLabel,
@@ -75,16 +109,49 @@ final class FutureIsolateConfiguration<Q, R>
   }
 }
 
-final class StreamIsolateConfiguration<Q, R>
-    extends IsolateConfiguration<Q, R> {
+final class StreamIsolateConfiguration<R> extends IsolateConfiguration<R> {
   const StreamIsolateConfiguration(
+    this._stream,
+    super.debugLabel,
+    super.flowId,
+  );
+
+  final IsolateStream<R> _stream;
+
+  Stream<FutureOr<R>> applyAndTime() {
+    return Timeline.timeSync(
+      debugLabel,
+      _stream,
+      flow: Flow.step(flowId),
+    );
+  }
+
+  @override
+  Future<void> handleCall(SendPort isolateToMainPort) async {
+    await for (final event in applyAndTime()) {
+      isolateToMainPort.send(
+        PartialSuccessIsolateResponse(
+          flowId,
+          await event,
+        ),
+      );
+    }
+    isolateToMainPort.send(
+      StreamClosedIsolateResponse(flowId),
+    );
+  }
+}
+
+final class TailoredStreamIsolateConfiguration<Q, R>
+    extends TailoredIsolateConfiguration<Q, R> {
+  const TailoredStreamIsolateConfiguration(
     this._stream,
     super.message,
     super.debugLabel,
     super.flowId,
   );
 
-  final IsolateStream<Q, R> _stream;
+  final TailoredIsolateStream<Q, R> _stream;
 
   Stream<FutureOr<R>> applyAndTime() {
     return Timeline.timeSync(
@@ -95,8 +162,8 @@ final class StreamIsolateConfiguration<Q, R>
   }
 
   @override
-  IsolateConfiguration<Q, R> copyWith({required Q message}) {
-    return StreamIsolateConfiguration(
+  TailoredIsolateConfiguration<Q, R> copyWith({required Q message}) {
+    return TailoredStreamIsolateConfiguration(
       _stream,
       message,
       debugLabel,
