@@ -144,6 +144,51 @@ class StreamBackpressureConfiguration<R>
 }
 
 @internal
+class TailoredFutureBackpressureConfiguration<Q, R>
+    extends TailoredBackpressureConfiguration<Q, R> {
+  /// Internal handle for sending stream events to the listener.
+  @internal
+  final Completer<R> completer;
+
+  /// Creates a job queue item for a [Stream] response.
+  @internal
+  const TailoredFutureBackpressureConfiguration(
+    this.completer,
+    super.configuration,
+  );
+
+  @override
+  TailoredBackpressureConfiguration<Q, R> copyWith(
+    TailoredIsolateConfiguration<Q, R> isolateConfiguration,
+  ) {
+    return TailoredFutureBackpressureConfiguration(
+      completer,
+      isolateConfiguration,
+    );
+  }
+
+  @override
+  void closeError(Object error, [StackTrace? stackTrace]) {
+    completer.completeError(error, stackTrace);
+  }
+
+  @override
+  Future<void> handleResponse(StreamQueue<dynamic> isolateToMainPort) async {
+    switch (await isolateToMainPort.next) {
+      case SuccessIsolateResponse<R>(response: final response):
+        completer.complete(response);
+      case ErrorIsolateResponse(
+          error: final error,
+          stackTrace: final stackTrace,
+        ):
+        closeError(error, stackTrace);
+      default:
+        closeError(UnexpectedDropException());
+    }
+  }
+}
+
+@internal
 class TailoredStreamBackpressureConfiguration<Q, R>
     extends TailoredBackpressureConfiguration<Q, R> {
   /// Internal handle for sending stream events to the listener.

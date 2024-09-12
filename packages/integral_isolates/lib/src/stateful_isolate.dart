@@ -119,7 +119,7 @@ class StatefulIsolate with IsolateBase implements IsolateGetter {
   /// Same footprint as the function compute from flutter, but runs on the
   /// long running thread and allows running in a pure Dart environment.
   @override
-  Future<R> run<R>(IsolateRunCallback computation, {String? debugLabel}) {
+  Future<R> run<R>(IsolateRunCallback<R> computation, {String? debugLabel}) {
     final completer = Completer<R>();
     addIsolateCall((flow) {
       final isolateConfiguration = FutureIsolateRunConfiguration(

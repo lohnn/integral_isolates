@@ -133,7 +133,7 @@ final class TailoredStatefulIsolate<Q, R>
         debugLabel,
         flow.id,
       );
-      return FutureBackpressureRunConfiguration(
+      return TailoredFutureBackpressureConfiguration(
         completer,
         isolateConfiguration,
       );
@@ -161,7 +161,7 @@ final class TailoredStatefulIsolate<Q, R>
         debugLabel,
         flow.id,
       );
-      return StreamBackpressureConfiguration(
+      return TailoredStreamBackpressureConfiguration(
         streamController,
         isolateConfiguration,
       );

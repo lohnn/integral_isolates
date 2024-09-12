@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:integral_isolates/integral_isolates.dart';
 import 'package:test/test.dart';
@@ -15,7 +16,7 @@ String _testFunctionStr(String text) {
 
 void main() {
   group('Simple iterable responses from backpressure', () {
-    List iterable() => [1, 'test', 2, 3, 4, 5].toList();
+    Iterable iterable() => [1, 'test', 2, 3, 4, 5];
 
     Future<List> runIsolate(BackpressureStrategy strategy) async {
       final isolate = StatefulIsolate(
@@ -27,7 +28,7 @@ void main() {
       final responses = [];
 
       int delayMultiplier = 0;
-      Future runCompute(dynamic input) async {
+      Future<void> runCompute(dynamic input) async {
         await Future.delayed(Duration(milliseconds: 50 * delayMultiplier++));
         if (input is String) {
           try {
@@ -40,8 +41,10 @@ void main() {
           try {
             final value = await isolate.run(() => _testFunction(input));
             responses.add(value);
-          } catch (e) {
+          } catch (e, stackTrace) {
             // Noop
+            print(e);
+            print(stackTrace);
           }
         }
       }
